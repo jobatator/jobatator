@@ -7,6 +7,6 @@ groups:
     - slug: "staileu"
 
 users:
-    - username: "thingmill_retrobox"
-      password: "272949a3f1c991b889fe9d3e"
+    - username: "root"
+      password: "root"
       groups: ["staileu"]

@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"net"
 	"strings"
-)
 
-var state map[string]string
-var password string
+	"github.com/lefuturiste/jobatator/pkg/utils"
+)
 
 func handleClient(conn net.Conn) {
 	fmt.Println("New client:", conn.RemoteAddr().String())
@@ -15,9 +14,6 @@ func handleClient(conn net.Conn) {
 	var input string
 	var componentIndex int
 	var components map[int]string
-	if state == nil {
-		state = make(map[string]string)
-	}
 	for {
 		message = true
 		buf := make([]byte, 1024)
@@ -48,9 +44,29 @@ func handleClient(conn net.Conn) {
 				}
 				if len(components) > 0 {
 					fmt.Println("New cmd: ", components)
-					//var name string = strings.ToUpper(components[0])
+					var name string = strings.ToUpper(components[0])
 
-					//fmt.Println(components)
+					var foundUser bool = false
+					for _, val := range utils.Sessions {
+						if val.Addr == conn.RemoteAddr().String() {
+							foundUser = true
+						}
+					}
+					if !foundUser && name != "AUTH" {
+						conn.Write([]byte("Err: not-logged"))
+						conn.Write([]byte("\r\n"))
+					} else {
+						cmd := utils.CmdInterface{
+							Parts: components,
+							Conn:  conn,
+						}
+						if CmdMap[name] == nil {
+							conn.Write([]byte("Err: unkown-command"))
+							conn.Write([]byte("\r\n"))
+						} else {
+							CmdMap[name].(func(utils.CmdInterface))(cmd)
+						}
+					}
 				}
 
 				input = ""

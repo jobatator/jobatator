@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
 
 	"gopkg.in/yaml.v2"
 )
@@ -14,9 +15,13 @@ type Group struct {
 
 // User -
 type User struct {
-	Username string
-	Password string
-	Groups   []string
+	Username     string
+	Password     string
+	Groups       []string
+	Addr         string
+	CurrentGroup Group
+	Conn         net.Conn
+	Status       string
 }
 
 // Config -
