@@ -1,0 +1,12 @@
+# Configuration file for the jobatator server
+
+port: 8962
+host: "0.0.0.0"
+groups:
+    - slug: "thingmill_retrobox"
+    - slug: "staileu"
+
+users:
+    - username: "thingmill_retrobox"
+      password: "272949a3f1c991b889fe9d3e"
+      groups: ["staileu"]

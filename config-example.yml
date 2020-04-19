@@ -1,0 +1,12 @@
+# Example of configuration file for the jobatator server
+
+port: 8962
+host: "0.0.0.0"
+groups:
+    - slug: "your_group_1"
+    - slug: "your_group_2"
+
+users:
+    - username: "your_user"
+      password: "your_password"
+      groups: ["your_group"]
