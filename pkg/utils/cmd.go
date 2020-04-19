@@ -23,5 +23,5 @@ func ReturnError(cmd CmdInterface, err string) {
 
 // NewLine -
 func NewLine(cmd CmdInterface) {
-	cmd.Conn.Write([]byte("\r\n"))
+	cmd.Conn.Write([]byte("\n"))
 }

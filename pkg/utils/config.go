@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net"
 
@@ -35,18 +34,22 @@ type Config struct {
 // Options -
 var Options Config
 
-// LoadConfig -
-func LoadConfig() {
-	Options = Config{}
-
-	dat, err := ioutil.ReadFile("./config.yml")
+// LoadConfigFromFile -
+func LoadConfigFromFile(path string) {
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		panic(err)
 	}
-	yamlConfig := string(dat)
-	fmt.Println(yamlConfig)
+	err = yaml.Unmarshal(data, &Options)
+	if err != nil {
+		panic(err)
+	}
+}
 
-	err = yaml.Unmarshal(dat, &Options)
+// LoadConfigFromString -
+func LoadConfigFromString(yamlConfig string) {
+	Options = Config{}
+	err := yaml.Unmarshal([]byte(yamlConfig), &Options)
 	if err != nil {
 		panic(err)
 	}

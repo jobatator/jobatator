@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	utils.LoadConfig()
+	utils.LoadConfigFromFile("./config.yml")
 	server.Start()
 }
