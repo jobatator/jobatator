@@ -50,7 +50,7 @@ func Publish(cmd utils.CmdInterface) {
 	}
 	// if a worker is availaible, notify a worker
 
-	go Dispatch()
+	go Dispatch(cmd)
 
 	utils.ReturnString(cmd, "OK")
 }

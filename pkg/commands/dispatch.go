@@ -2,7 +2,7 @@ package commands
 
 import (
 	"encoding/json"
-	"fmt"
+	"time"
 
 	"github.com/lefuturiste/jobatator/pkg/utils"
 )
@@ -30,39 +30,39 @@ for each queue:
 
 // DispatchData -
 type DispatchData struct {
-	Job utils.Job
+	Job   utils.Job
+	Debug string
 }
 
 // Dispatch -
-func Dispatch() {
-	fmt.Println("New dispatch batch")
+func Dispatch(cmd utils.CmdInterface) {
 	for _, queue := range utils.Queues {
-		fmt.Println(queue)
 		for _, job := range queue.Jobs {
-			fmt.Println(job)
-			if job.State == utils.JobPending {
-				fmt.Println("- One pendind job")
+
+			// check if a job has expired, if the job expired, set as pending
+			if job.Type == utils.JobInProgress && job.Attempts < 3 {
+				duration := time.Since(job.StartedProcessingAt)
+				if duration.Minutes() > 5 {
+					// we consider the job as expired if the job started processing 5 min ago
+					job.State = utils.JobPending
+				}
+			}
+
+			if job.State == utils.JobPending || job.State == utils.JobErrored {
+				// if the job is pending or errored we send the job to a available worker
 				for _, worker := range queue.Workers {
-					fmt.Println(worker)
 					if worker.Status == utils.WorkerAvailable {
 						// send the job
 						dispatchData := DispatchData{
-							Job: job,
+							Job:   job,
+							Debug: "Dispatch data",
 						}
 						data, _ := json.Marshal(dispatchData)
 						worker.Conn.Write(data)
-						worker.Conn.Write([]byte("\r\n"))
+						worker.Conn.Write([]byte("\n"))
 					}
 				}
 			}
-			// check if a job has expired, if the job expired, set as pending
-			// if job.Type == utils.JobInProgress {
-			// 	duration := time.Since(job.StartedProcessingAt)
-			// 	if duration.Minutes() > 5 {
-			// 		// we consider the job as expired if the job started processing 5 min ago
-			// 		job.State = utils.JobPending
-			// 	}
-			// }
 		}
 	}
 }

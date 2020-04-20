@@ -11,6 +11,9 @@ const JobPending = "pending"
 // JobInProgress - the job was taken by a worker and being worked out
 const JobInProgress = "in-progress"
 
+// JobErrored - the job was processed but issues happen so it need a rerun
+const JobErrored = "errored"
+
 // JobDone - the job was processed without issues by the worker
 const JobDone = "done"
 
@@ -20,7 +23,9 @@ type Job struct {
 	State               string
 	Type                string
 	Payload             string
+	Attempts            int
 	StartedProcessingAt time.Time
+	EndProcessingAt     time.Time
 }
 
 // Queue -
@@ -49,4 +54,13 @@ func FindSession(cmd CmdInterface) User {
 		}
 	}
 	return user
+}
+
+// UpdateUser -
+func UpdateUser(user User) {
+	for key, value := range Sessions {
+		if value.Addr == user.Addr {
+			Sessions[key] = user
+		}
+	}
 }

@@ -23,13 +23,13 @@ func parseCommand(input string) map[int]string {
 		} else if strings.Contains(value, "'") && value[len(value)-1:] == "'" {
 			// fmt.Println("End of quoted ", value)
 			// we reached the end of the quoted component
-			quotedComponent += value
+			quotedComponent += " " + value
 			quotedComponent = quotedComponent[1 : len(quotedComponent)-1]
 			inQuoted = false
 			components[componentIndex] = quotedComponent
 			componentIndex++
 		} else if inQuoted {
-			quotedComponent += value
+			quotedComponent += " " + value
 		} else {
 			components[componentIndex] = value
 			componentIndex++
