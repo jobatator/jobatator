@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"errors"
+
 	"github.com/lefuturiste/jobatator/pkg/utils"
 )
 
@@ -14,23 +16,17 @@ func Quit(cmd utils.CmdInterface) {
 	cmd.Conn.Close()
 }
 
-// UseGroup - will switch the session on a specific group
-func UseGroup(cmd utils.CmdInterface) {
-	if len(cmd.Parts) != 2 {
-		utils.ReturnError(cmd, "invalid-input")
-		return
-	}
+// UseGroupUniversal -
+func UseGroupUniversal(groupRaw string, user utils.User) (utils.Group, error) {
 	var group utils.Group
 	for _, value := range utils.Options.Groups {
-		if value.Slug == cmd.Parts[1] {
+		if value.Slug == groupRaw {
 			group = value
 		}
 	}
 	if group.Slug == "" {
-		utils.ReturnError(cmd, "unknown-group")
-		return
+		return group, errors.New("unknown-group")
 	}
-	user := utils.FindSession(cmd)
 	var isAllowed bool = false
 	for _, value := range user.Groups {
 		if value == group.Slug {
@@ -38,12 +34,27 @@ func UseGroup(cmd utils.CmdInterface) {
 		}
 	}
 	if !isAllowed {
-		utils.ReturnError(cmd, "forbidden-group")
-		return
+		return group, errors.New("forbidden-group")
 	}
 	user.CurrentGroup = group
 	utils.UpdateUser(user)
-	utils.ReturnString(cmd, "OK")
+	return group, nil
+}
+
+// UseGroup - will switch the session on a specific group
+func UseGroup(cmd utils.CmdInterface) {
+	if len(cmd.Parts) != 2 {
+		utils.ReturnError(cmd, "invalid-input")
+		return
+	}
+	user := utils.FindSession(cmd)
+	_, err := UseGroupUniversal(cmd.Parts[1], user)
+
+	if err == nil {
+		utils.ReturnString(cmd, "OK")
+	} else {
+		utils.ReturnError(cmd, err.Error())
+	}
 }
 
 // Auth -

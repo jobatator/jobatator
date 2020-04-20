@@ -39,7 +39,7 @@ func Subscribe(cmd utils.CmdInterface) {
 	queue.Workers = append(queue.Workers, user)
 	utils.Queues[queueKey] = queue
 
-	go Dispatch(cmd)
+	go DispatchUniversal()
 
 	utils.ReturnString(cmd, "OK")
 }

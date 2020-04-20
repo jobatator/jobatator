@@ -25,10 +25,11 @@ type User struct {
 
 // Config -
 type Config struct {
-	Groups []Group
-	Users  []User
-	Port   int
-	Host   string
+	Groups  []Group
+	Users   []User
+	Host    string
+	Port    int
+	WebPort int
 }
 
 // Options -

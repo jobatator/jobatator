@@ -34,8 +34,8 @@ type DispatchData struct {
 	Debug string
 }
 
-// Dispatch -
-func Dispatch(cmd utils.CmdInterface) {
+// DispatchUniversal -
+func DispatchUniversal() {
 	for _, queue := range utils.Queues {
 		for _, job := range queue.Jobs {
 
@@ -65,4 +65,9 @@ func Dispatch(cmd utils.CmdInterface) {
 			}
 		}
 	}
+}
+
+// Dispatch
+func Dispatch(cmd utils.CmdInterface) {
+	DispatchUniversal()
 }

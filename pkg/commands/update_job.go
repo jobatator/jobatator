@@ -63,7 +63,7 @@ func UpdateJob(cmd utils.CmdInterface) {
 		// free this worker
 		user.Status = utils.WorkerAvailable
 		// see if this worker can work again
-		go Dispatch(cmd)
+		go DispatchUniversal()
 	}
 	utils.UpdateUser(user)
 

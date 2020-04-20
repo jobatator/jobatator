@@ -1,7 +1,7 @@
 # Configuration file for the jobatator server
-
 port: 8962
 host: "0.0.0.0"
+webport: 8952
 groups:
     - slug: "thingmill_retrobox"
     - slug: "staileu"
