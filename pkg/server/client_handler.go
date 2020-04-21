@@ -14,6 +14,7 @@ func handleClient(conn net.Conn) {
 	var input string
 	var componentIndex int
 	var components map[int]string
+	var user utils.User
 	for {
 		message = true
 		buf := make([]byte, 1024)
@@ -46,13 +47,12 @@ func handleClient(conn net.Conn) {
 					fmt.Println("New cmd: ", components)
 					var name string = strings.ToUpper(components[0])
 
-					var foundUser bool = false
 					for _, val := range utils.Sessions {
 						if val.Addr == conn.RemoteAddr().String() {
-							foundUser = true
+							user = val
 						}
 					}
-					if !foundUser && name != "AUTH" {
+					if user.Username == "" && name != "AUTH" {
 						conn.Write([]byte("Err: not-logged"))
 						conn.Write([]byte("\r\n"))
 					} else {
@@ -76,6 +76,28 @@ func handleClient(conn net.Conn) {
 		}
 		if message {
 			input = input + string(buf)
+		}
+	}
+	if user.Username != "" {
+		currentAddr := conn.RemoteAddr().String()
+		// remove user from the session array
+		var newSessions []utils.User
+		for _, val := range utils.Sessions {
+			if currentAddr != val.Addr {
+				newSessions = append(newSessions, val)
+			}
+		}
+		utils.Sessions = newSessions
+
+		// remove user from all the worker inside the queues
+		for key, queue := range utils.Queues {
+			var newWorkers []utils.User
+			for _, worker := range queue.Workers {
+				if currentAddr != worker.Addr {
+					newWorkers = append(newWorkers, worker)
+				}
+			}
+			utils.Queues[key].Workers = newWorkers
 		}
 	}
 }
