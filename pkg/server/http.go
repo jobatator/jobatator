@@ -13,7 +13,8 @@ import (
 	"github.com/lefuturiste/jobatator/pkg/utils"
 )
 
-type PublishHttpInput struct {
+// PublishHTTPInput -
+type PublishHTTPInput struct {
 	Group   string
 	Queue   string
 	Type    string
@@ -59,7 +60,7 @@ func StartHTTPServer() {
 			return
 		}
 
-		var bodyFormated PublishHttpInput
+		var bodyFormated PublishHTTPInput
 		json.Unmarshal(body, &bodyFormated)
 
 		group, err := commands.UseGroupUniversal(bodyFormated.Group, user)
