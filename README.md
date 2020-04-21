@@ -1,51 +1,50 @@
 # Jobatator
 
+Jobatator is a light alternative to RabbitMQ, if you need a way to connect workers together in order to work on some heavy jobs, this might be a solution for you. You can interact with jobatator using a TCP connexion.
+
 ## Commands
 
+Warning: For now the server is using "\r\n" but "\n" as end line!
+
+The major commands:
+
+- AUTH username password
 - PING
-- AUTH username:password
+- USE_GROUP group
 - PUBLISH namespace queue job_type 'payload'
 - SUBSCRIBE namespace queue
-- JOB UPDATE job_id status # status can be 'done' 'processing' or 'failed'
-
-CRUD on namespaces
-- NAMESPACE LIST
-- NAMESPACE CREATE
-- NAMESPACE UPDATE
-- NAMESPACE DELETE
-
-CRUD on users
-- USER LIST
-- USER CREATE
-- USER UPDATE
-- USER DELETENew client: 127.0.0.1:57264
-New cmd:  map[0:EVAL 1:-- Get all of the messages with an expired "score"...
-local val = redis.call('zrangebyscore', KEYS[1], '-inf', ARGV[1])
-
--- If we have values in the array, we will remove them from the first queue
--- and add them onto the destination queue in chunks of 100, which moves
--- all of the appropriate messages onto the destination queue very safely.
-if(next(val) ~= nil) then
-    redis.call('zremrangebyrank', KEYS[1], 0, #val - 1)
-
-    for i = 1, #val, 100 do
-        redis.call('lpush', KEYS[2], unpack(val, i, math.min(i+99, #val)))
-    end
-
-
-Si on veut utiliser keyvaluer comme jobatator, alors il faut ajouter ces systèmes:
-- on va alors avoir un serveur keyvaluer pour chaque namespace
-- il faut un moyen afin de faire en sorte que le worker reçoit la notification qu'il y a un job 
-- pouvoir dispatcher les jobs, et ça c'est compliqué
+- JOB UPDATE job_id status # status can be 'done' 'in-progress' or 'errored'
 
 ## Ressources
 
-### queue
+### Group
 
-- slug: string
-- jobs: collection
+- Slug: string
 
-### job
+### User
 
-- slug: string
-- status: string  ['waiting', 'processing', 'done']
+- Username:     string
+- Password:     string
+- Groups:       string[]
+- Addr:         string
+- CurrentGroup: Group
+- Conn:         net.Conn
+- Status:       string
+
+### Queue
+
+- Group:   string
+- Slug:    string
+- Jobs:    Job[]
+- Workers: User[]
+
+### Job
+
+- ID:                  string
+- Slug:                string
+- Type:                string
+- Payload:             string
+- Status:              string  ['pending', 'in-progress', 'errored', 'done']
+- Attempts:            int
+- StartedProcessingAt: timestamp
+- EndProcessingAt:     timestamp

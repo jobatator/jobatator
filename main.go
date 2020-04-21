@@ -7,6 +7,6 @@ import (
 
 func main() {
 	utils.LoadConfigFromFile("./config.yml")
-	go server.StartHTTPServer()
+	//go server.StartHTTPServer()
 	server.Start()
 }

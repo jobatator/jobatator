@@ -1,0 +1,33 @@
+on:
+  push:
+    branches: [master]
+
+name: Create release and upload release asset
+
+jobs:
+  build:
+    name: Create release and upload release asset
+    strategy:
+      matrix:
+        go-version: [1.14.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go-version }}
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Build
+        run: go build
+      - name: Release
+        uses: sondreb/action-release@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: "jobatator"
+          draft: true
+          prerelease: true
+          body: 'Pre-release commit helded (will update on every commit)'
+          name: "Draft Release"
+          tag: tmp
