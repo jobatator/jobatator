@@ -5,9 +5,36 @@ heavy jobs, this might be a solution for you. You can interact with jobatator us
 
 ## Configuration
 
-You can find an example of configuration in `config.example.yml`.
+You can find an example of configuration in `config.example.yml`. Access it [here](https://github.com/lefuturiste/jobatator/blob/master/config.example.yml).
 
 **Warning: by default if you are not providing the port or host key in the config, the server will listen by default on host 0.0.0.0 and on port 8962.**
+
+## Docker image
+
+You can find the docker image details [here](https://hub.docker.com/repository/docker/lefuturiste/jobatator).
+
+## Use with docker-compose
+
+The most simple way to start a jobatator server using docker is by making use of a `docker-compose.yml` file.
+
+You can find an example of a `docker-compose.yml` file to host jobatator [here](https://github.com/lefuturiste/jobatator/blob/master/docker-compose.yml).
+
+In the same directory with the `docker-compose.yml` file type this command to start the server:
+
+`docker-compose up -d`
+
+### Use with docker cli
+
+Not really recommanded, but you can do it:
+
+```bash
+# in the publish or -p flag, the right port is the container port whereas the left part is the machine port \
+docker run \
+    --name jobatator \
+    -p 8962:8962 \
+    -v /absolute/path/to/config.yml:/go/src/app/config.yml \
+    lefuturiste/jobatator:latest
+```
 
 ## Commands
 

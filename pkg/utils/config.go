@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net"
 
@@ -46,7 +45,6 @@ func LoadConfigFromFile(path string) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(Options)
 	if Options.Host == "" {
 		Options.Host = "0.0.0.0"
 	}
