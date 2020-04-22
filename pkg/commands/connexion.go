@@ -2,6 +2,7 @@ package commands
 
 import (
 	"errors"
+	"os"
 
 	"github.com/lefuturiste/jobatator/pkg/utils"
 )
@@ -14,6 +15,16 @@ func Ping(cmd utils.CmdInterface) {
 // Quit -
 func Quit(cmd utils.CmdInterface) {
 	cmd.Conn.Close()
+}
+
+// StopServer - Will exit the server process, only work if the env var STOP_POLICY is PUBLIC.
+//              Warning: this feature is really dangerous and open serious secuity risks. Use it with cares.
+func StopServer(cmd utils.CmdInterface) {
+	if os.Getenv("STOP_POLICY") == "PUBLIC" {
+		os.Exit(0)
+	} else {
+		utils.ReturnError(cmd, "forbidden")
+	}
 }
 
 // UseGroupUniversal -
