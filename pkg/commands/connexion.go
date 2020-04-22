@@ -21,6 +21,7 @@ func Quit(cmd utils.CmdInterface) {
 //              Warning: this feature is really dangerous and open serious secuity risks. Use it with cares.
 func StopServer(cmd utils.CmdInterface) {
 	if os.Getenv("STOP_POLICY") == "PUBLIC" {
+		utils.NewLine(cmd)
 		os.Exit(0)
 	} else {
 		utils.ReturnError(cmd, "forbidden")
