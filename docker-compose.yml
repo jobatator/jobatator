@@ -1,0 +1,10 @@
+version: '3'
+services:
+  jobatator:
+    image: lefuturiste/jobatator:latest
+    container_name: jobatator
+    restart: always
+    ports:
+      - "8962:8962"
+    volumes:
+      - ./config.yml:/go/src/app/config.yml

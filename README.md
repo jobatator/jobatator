@@ -1,6 +1,13 @@
 # Jobatator
 
-Jobatator is a light alternative to RabbitMQ, if you need a way to connect workers together in order to work on some heavy jobs, this might be a solution for you. You can interact with jobatator using a TCP connexion.
+Jobatator is a light alternative to RabbitMQ, if you need a way to connect workers together in order to work on some 
+heavy jobs, this might be a solution for you. You can interact with jobatator using a TCP connexion.
+
+## Configuration
+
+You can find an example of configuration in `config.example.yml`.
+
+**Warning: by default if you are not providing the port or host key in the config, the server will listen by default on host 0.0.0.0 and on port 8962.**
 
 ## Commands
 

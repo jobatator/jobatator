@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net"
 
@@ -44,6 +45,16 @@ func LoadConfigFromFile(path string) {
 	err = yaml.Unmarshal(data, &Options)
 	if err != nil {
 		panic(err)
+	}
+	fmt.Println(Options)
+	if Options.Host == "" {
+		Options.Host = "0.0.0.0"
+	}
+	if Options.Port == 0 {
+		Options.Port = 8962
+	}
+	if Options.WebPort == 0 {
+		Options.WebPort = 8952
 	}
 }
 
