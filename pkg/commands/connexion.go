@@ -14,6 +14,7 @@ func Ping(cmd utils.CmdInterface) {
 
 // Quit -
 func Quit(cmd utils.CmdInterface) {
+	utils.NewLine(cmd)
 	cmd.Conn.Close()
 }
 
