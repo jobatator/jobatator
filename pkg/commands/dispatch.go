@@ -67,7 +67,7 @@ func DispatchUniversal() {
 	}
 }
 
-// Dispatch
+// Dispatch -
 func Dispatch(cmd utils.CmdInterface) {
 	DispatchUniversal()
 }
