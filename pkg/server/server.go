@@ -11,26 +11,32 @@ import (
 
 // StartAsync - Start the TCP server with a go routine
 func StartAsync() {
-	go serverLoop()
+	listener := prepareServer()
+	go serverLoop(listener)
 }
 
 // Start - Start the TCP server
 func Start() {
-	serverLoop()
+	listener := prepareServer()
+	serverLoop(listener)
 }
 
-func serverLoop() {
+func prepareServer() net.Listener {
 	var host string = utils.Options.Host
 	var port string = strconv.FormatInt(int64(utils.Options.Port), 10)
-	l, err := net.Listen("tcp", host+":"+port)
+	listener, err := net.Listen("tcp", host+":"+port)
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
 	}
-	defer l.Close()
 	fmt.Println("Listening on " + host + ":" + port)
+	return listener
+}
+
+func serverLoop(listener net.Listener) {
+	defer listener.Close()
 	for {
-		conn, err := l.Accept()
+		conn, err := listener.Accept()
 		if err != nil {
 			fmt.Println("Error accepting: ", err.Error())
 			os.Exit(1)
