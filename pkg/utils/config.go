@@ -25,11 +25,12 @@ type User struct {
 
 // Config -
 type Config struct {
-	Groups  []Group
-	Users   []User
-	Host    string
-	Port    int
-	WebPort int
+	Groups      []Group
+	Users       []User
+	Host        string
+	Port        int
+	WebPort     int
+	DelayPolicy string `yaml:"delay_policy"`
 }
 
 // Options -

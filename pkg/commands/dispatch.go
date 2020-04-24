@@ -36,6 +36,12 @@ type DispatchData struct {
 
 // DispatchUniversal -
 func DispatchUniversal() {
+	DispatchUniversalWithDelay(0)
+}
+
+// DispatchUniversalWithDelay -
+func DispatchUniversalWithDelay(delay int) {
+	time.Sleep(time.Duration(delay) * time.Second)
 	for _, queue := range utils.Queues {
 		for _, job := range queue.Jobs {
 

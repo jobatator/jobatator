@@ -30,6 +30,8 @@ users:
     - username: "user2"
       password: "pass1"
       groups: ["group2", "group3"]
+
+delay_policy: "IGNORE"
 `
 
 func getConn() net.Conn {

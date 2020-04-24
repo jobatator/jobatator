@@ -63,7 +63,14 @@ func UpdateJob(cmd utils.CmdInterface) {
 		// free this worker
 		user.Status = utils.WorkerAvailable
 		// see if this worker can work again
-		go DispatchUniversal()
+		delay := 2 // in seconds
+		if job.State == utils.JobErrored {
+			delay = 1800 // wait 30 minutes before trying again
+		}
+		if utils.Options.DelayPolicy == "IGNORE" {
+			delay = 0
+		}
+		go DispatchUniversalWithDelay(delay)
 	}
 	utils.UpdateUser(user)
 
