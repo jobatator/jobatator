@@ -3,7 +3,9 @@ package utils
 import (
 	"io/ioutil"
 	"net"
+	"strings"
 
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
 
@@ -29,8 +31,9 @@ type Config struct {
 	Users       []User
 	Host        string
 	Port        int
-	WebPort     int
+	WebPort     int    `yaml:"web_port"`
 	DelayPolicy string `yaml:"delay_policy"`
+	LogLevel    string `yaml:"log_level"`
 }
 
 // Options -
@@ -42,7 +45,13 @@ func LoadConfigFromFile(path string) {
 	if err != nil {
 		panic(err)
 	}
-	err = yaml.Unmarshal(data, &Options)
+	LoadConfigFromString(string(data))
+}
+
+// LoadConfigFromString -
+func LoadConfigFromString(yamlConfig string) {
+	Options = Config{}
+	err := yaml.Unmarshal([]byte(yamlConfig), &Options)
 	if err != nil {
 		panic(err)
 	}
@@ -55,13 +64,20 @@ func LoadConfigFromFile(path string) {
 	if Options.WebPort == 0 {
 		Options.WebPort = 8952
 	}
-}
-
-// LoadConfigFromString -
-func LoadConfigFromString(yamlConfig string) {
-	Options = Config{}
-	err := yaml.Unmarshal([]byte(yamlConfig), &Options)
-	if err != nil {
-		panic(err)
+	var logLevel = log.InfoLevel
+	switch strings.ToLower(Options.LogLevel) {
+	case "trace":
+		logLevel = log.TraceLevel
+	case "debug":
+		logLevel = log.DebugLevel
+	case "warn":
+		logLevel = log.WarnLevel
+	case "error":
+		logLevel = log.ErrorLevel
+	case "fatal":
+		logLevel = log.FatalLevel
+	case "panic":
+		logLevel = log.PanicLevel
 	}
+	log.SetLevel(logLevel)
 }

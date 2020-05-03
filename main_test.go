@@ -32,6 +32,7 @@ users:
       groups: ["group2", "group3"]
 
 delay_policy: "IGNORE"
+log_level: "DEBUG"
 `
 
 func getConn() net.Conn {

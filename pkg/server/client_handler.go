@@ -1,15 +1,15 @@
 package server
 
 import (
-	"fmt"
 	"net"
 	"strings"
 
 	"github.com/lefuturiste/jobatator/pkg/utils"
+	log "github.com/sirupsen/logrus"
 )
 
 func handleClient(conn net.Conn) {
-	fmt.Println("New client:", conn.RemoteAddr().String())
+	log.Debug("New client: ", conn.RemoteAddr().String())
 	var message bool
 	var input string
 	var componentIndex int
@@ -44,7 +44,7 @@ func handleClient(conn net.Conn) {
 					components = parseCommand(input[0 : len(input)-1])
 				}
 				if len(components) > 0 {
-					fmt.Println("New cmd: ", components)
+					log.Debug("New cmd: ", components)
 					var name string = strings.ToUpper(components[0])
 
 					for _, val := range utils.Sessions {
