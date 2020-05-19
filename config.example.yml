@@ -1,7 +1,17 @@
 # Example of configuration file for the jobatator server
 
-port: 8962
-host: "0.0.0.0"
+host: "0.0.0.0" # optional, default to "0.0.0.0", the host used for the TCP and the HTTP interface
+
+port: 8962 # optional, default to 8962, will set the port used for the TCP interface
+web_port: 8952 # optional, default to 8952, will set the port used for the HTTP interface
+
+test_mode: false # optional, default to false, if true will enable DEBUG, DEBUG_JSON, STOP_SERVER and DISPATCH comamnds
+delay_policy: "IGNORE" # optional, default to empty string, if set to ignore, the server will ignore every delay or sleep
+allow_dispatch: false # optional, default to false, if set to true, then the dispatch command will be allowed
+
+log_level: "warning" # optional, default to "info", will set the log level of the App
+# allowed values: "trace" | "debug" | "warn" | "error" | "fatal" | "panic"
+
 groups:
     - slug: "your_group_1"
     - slug: "your_group_2"
@@ -10,3 +20,4 @@ users:
     - username: "your_user"
       password: "your_password"
       groups: ["your_group"]
+

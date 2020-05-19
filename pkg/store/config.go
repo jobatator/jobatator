@@ -3,6 +3,7 @@ package store
 import (
 	"io/ioutil"
 	"net"
+	"os"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -27,13 +28,15 @@ type User struct {
 
 // Config -
 type Config struct {
-	Groups      []Group
-	Users       []User
-	Host        string
-	Port        int
-	WebPort     int    `yaml:"web_port"`
-	DelayPolicy string `yaml:"delay_policy"`
-	LogLevel    string `yaml:"log_level"`
+	Groups        []Group
+	Users         []User
+	Host          string
+	Port          int
+	WebPort       int    `yaml:"web_port"`
+	DelayPolicy   string `yaml:"delay_policy"`
+	LogLevel      string `yaml:"log_level"`
+	TestMode      bool   `yaml:"test_mode"`
+	AllowDispatch bool   `yaml:"allow_dispatch"`
 }
 
 // Options -
@@ -63,6 +66,9 @@ func LoadConfigFromString(yamlConfig string) {
 	}
 	if Options.WebPort == 0 {
 		Options.WebPort = 8952
+	}
+	if !Options.TestMode {
+		Options.TestMode = os.Getenv("TEST_MODE") != ""
 	}
 	var logLevel = log.InfoLevel
 	switch strings.ToLower(Options.LogLevel) {

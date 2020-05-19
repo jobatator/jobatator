@@ -32,6 +32,7 @@ users:
       groups: ["group2", "group3"]
 
 delay_policy: "IGNORE"
+test_mode: true
 log_level: "DEBUG"
 `
 

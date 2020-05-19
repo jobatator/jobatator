@@ -18,10 +18,10 @@ func Quit(cmd CmdInterface) {
 	cmd.Conn.Close()
 }
 
-// StopServer - Will exit the server process, only work if the env var STOP_POLICY is PUBLIC.
-//              Warning: this feature is really dangerous and open serious secuity risks. Use it with cares.
+// StopServer - Will exit the server process, only work if TEST_MODE env var or config key 'test_mode' is set to true
+//              Warning: this feature is really dangerous and open serious security risks. Use it with cares.
 func StopServer(cmd CmdInterface) {
-	if os.Getenv("STOP_POLICY") == "PUBLIC" {
+	if store.Options.TestMode {
 		NewLine(cmd)
 		os.Exit(0)
 	} else {

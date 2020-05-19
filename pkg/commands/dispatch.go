@@ -76,5 +76,9 @@ func DispatchUniversalWithDelay(delay int) {
 
 // Dispatch -
 func Dispatch(cmd CmdInterface) {
+	if !store.Options.AllowDispatch {
+		ReturnError(cmd, "dispatch-disabled")
+		return
+	}
 	DispatchUniversal()
 }

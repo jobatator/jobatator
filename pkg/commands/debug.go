@@ -9,6 +9,10 @@ import (
 
 // Debug -
 func Debug(cmd CmdInterface) {
+	if !store.Options.TestMode {
+		ReturnError(cmd, "test-mode-disabled")
+		return
+	}
 	ReturnString(cmd, "== GROUPS ==")
 	for _, group := range store.Options.Groups {
 		ReturnString(cmd, "- slug: "+group.Slug)
@@ -57,6 +61,10 @@ type DebugOutput struct {
 
 // DebugJSON -
 func DebugJSON(cmd CmdInterface) {
+	if !store.Options.TestMode {
+		ReturnError(cmd, "test-mode-disabled")
+		return
+	}
 	var debubOutput DebugOutput
 	debubOutput.Queues = store.Queues
 	debubOutput.Groups = store.Options.Groups
