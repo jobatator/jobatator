@@ -1,20 +1,12 @@
 package commands
 
 import (
-	"errors"
-
 	"github.com/dchest/uniuri"
 	"github.com/lefuturiste/jobatator/pkg/store"
 )
 
 // PublishUniversal - Will add a job on a queue PUBLISH queue_name job_type payload
 func PublishUniversal(parts map[int]string, user store.User) (bool, error) {
-	if len(parts) != 4 {
-		return false, errors.New("invalid-input")
-	}
-	if user.CurrentGroup.Slug == "" {
-		return false, errors.New("group-non-selected")
-	}
 	if len(store.Queues) == 0 {
 		store.Queues = make([]store.Queue, 0)
 	}

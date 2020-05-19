@@ -7,10 +7,6 @@ import (
 
 // Subscribe - If the client is a worker, he will use this cmd to subscribe to a queue
 func Subscribe(cmd CmdInterface) {
-	if cmd.User.CurrentGroup.Slug == "" {
-		ReturnError(cmd, "group-non-selected")
-		return
-	}
 	// find the queue
 	var queue store.Queue
 	var queueKey int
