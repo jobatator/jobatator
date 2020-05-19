@@ -10,6 +10,7 @@ jobs:
   build:
     name: Continuous integration
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
       - name: Build and push Docker images
