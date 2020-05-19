@@ -56,6 +56,23 @@ var CmdMap = []cmds.CmdDefinition{
 		UseGroup:    true,
 		Args:        1,
 	}, {
+		Name:        "LIST_QUEUES",
+		Handler:     cmds.ListQueues,
+		RequireAuth: true,
+		UseGroup:    true,
+	}, {
+		Name:        "DELETE_QUEUE",
+		Handler:     cmds.DeleteQueue,
+		RequireAuth: true,
+		UseGroup:    true,
+		Args:        1,
+	}, {
+		Name:        "LIST_JOBS",
+		Handler:     cmds.ListJobs,
+		RequireAuth: true,
+		UseGroup:    true,
+		Args:        1,
+	}, {
 		Name:        "UPDATE_JOB",
 		Handler:     cmds.UpdateJob,
 		RequireAuth: true,

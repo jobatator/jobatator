@@ -163,37 +163,47 @@ func TestJob(t *testing.T) {
 	conn := getConn()
 	buf := bufio.NewReader(conn)
 
+	// try to authenticate with bad credidentials
 	send(conn, "AUTH user1 pass2")
 	reply := readReply(buf)
 	assert.Equal(t, reply[0:3], "Err")
 
+	// try to authenticate with good credidentials
 	send(conn, "AUTH user1 pass1")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "Welcome!")
 
+	// check if the connexion is alive
 	send(conn, "PING")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "PONG")
 
+	// try to use a forbidden group
 	send(conn, "USE_GROUP group2")
 	reply = readReply(buf)
 	assert.Equal(t, reply[0:3], "Err")
 
+	// try to use a allowed group
 	send(conn, "USE_GROUP group1")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "OK")
 
-	// wait for the second client to be ready
+	// wait for the second client to initialize (auth & use group)
 	for !secondClientReady {
 	}
 	secondClientReady = false
 
+	// create dummy job payload
 	fakeJobArgs = getFakeJobArgs()
 	jsonRaw, _ := json.Marshal(fakeJobArgs)
 	jsonStr := string(jsonRaw)
+
+	// publish the job
 	send(conn, "PUBLISH default job.type '"+jsonStr+"'")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "OK")
+
+	// assert that the job was created
 	debug := getDebug(conn, buf)
 	assert.Equal(t, debug.Queues[0].Slug, "default")
 	assert.Equal(t, debug.Queues[0].Jobs[0].Type, "job.type")
@@ -204,16 +214,44 @@ func TestJob(t *testing.T) {
 	}
 	secondClientReady = false
 
+	// check if the connexion is still alive
 	send(conn, "PING")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "PONG")
 
+	// try list the queues
+	send(conn, "LIST_QUEUES")
+	reply = readReply(buf)
+	var queues []store.Queue
+	json.Unmarshal([]byte(reply), &queues)
+	assert.Equal(t, len(queues), 1)
+
+	// try list the jobs
+	send(conn, "LIST_JOBS "+debug.Queues[0].Slug)
+	reply = readReply(buf)
+	var jobs []store.Job
+	json.Unmarshal([]byte(reply), &jobs)
+	assert.Equal(t, len(jobs), 1)
+	// assert that the job is done
+	assert.Equal(t, jobs[0].State, store.JobDone)
+	assert.Equal(t, jobs[0].Type, "job.type")
+
+	// try to delete a job
 	send(conn, "DELETE_JOB "+debug.Queues[0].Jobs[0].ID)
 	beforeCount := len(debug.Queues[0].Jobs)
 	reply = readReply(buf)
 	assert.Equal(t, reply, "OK")
 
+	// assert that the job has been deleted
 	debug = getDebug(conn, buf)
 	assert.Equal(t, len(debug.Queues[0].Jobs), beforeCount-1)
 
+	// try to delete a queue
+	send(conn, "DELETE_QUEUE "+debug.Queues[0].Slug)
+	reply = readReply(buf)
+	assert.Equal(t, reply, "OK")
+
+	// assert that the queue has been deleted
+	debug = getDebug(conn, buf)
+	assert.Equal(t, 0, len(debug.Queues))
 }

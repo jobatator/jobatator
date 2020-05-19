@@ -1,10 +1,23 @@
 package commands
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/lefuturiste/jobatator/pkg/store"
 )
+
+// ListJobs - List all jobs in a queue
+func ListJobs(cmd CmdInterface) {
+	queue, err := store.FindQueueBySlug(cmd.Parts[1], cmd.User.CurrentGroup)
+	if err != nil {
+		ReturnError(cmd, err.Error())
+		return
+	}
+
+	rawJSON, _ := json.Marshal(queue.Jobs)
+	ReturnString(cmd, string(rawJSON))
+}
 
 // UpdateJob - Update the state of the job
 // Arguments: JOB_ID, JOB_STATUS

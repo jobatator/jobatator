@@ -1,13 +1,13 @@
 package commands
 
-import "github.com/lefuturiste/jobatator/pkg/store"
+import (
+	"encoding/json"
+
+	"github.com/lefuturiste/jobatator/pkg/store"
+)
 
 // ListQueues - List all the queues in a group
 func ListQueues(cmd CmdInterface) {
-	if cmd.User.CurrentGroup.Slug == "" {
-		ReturnError(cmd, "group-non-selected")
-		return
-	}
 	var queues []store.Queue
 	// filter all the queues inside a particular group
 	for _, queue := range store.Queues {
@@ -15,6 +15,21 @@ func ListQueues(cmd CmdInterface) {
 			queues = append(queues, queue)
 		}
 	}
+	rawJSON, _ := json.Marshal(queues)
+	ReturnString(cmd, string(rawJSON))
+}
 
+// DeleteQueue - Delete a queue
+func DeleteQueue(cmd CmdInterface) {
+	queue, err := store.FindQueueBySlug(cmd.Parts[1], cmd.User.CurrentGroup)
+	if err != nil {
+		ReturnError(cmd, err.Error())
+		return
+	}
+	err = queue.Delete()
+	if err != nil {
+		ReturnError(cmd, err.Error())
+		return
+	}
 	ReturnString(cmd, "OK")
 }
