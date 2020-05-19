@@ -42,14 +42,15 @@ Warning: For now the server is using "\r\n" but "\n" as end line!
 
 The major commands:
 
-- AUTH username password
-- PING
-- USE_GROUP group
-- PUBLISH namespace queue job_type 'payload'
-- SUBSCRIBE namespace queue
-- JOB UPDATE job_id status # status can be 'done' 'in-progress' or 'errored'
+- AUTH {username} {password}
+- USE_GROUP {group}
+- PUBLISH {queue_slug} {job_type} 'payload'
+- SUBSCRIBE {queue_slug}
+- UPDATE_JOB {job_id} {job_status} # status can be 'done', 'in-progress' or 'errored'
 
-## Ressources
+You can find description of all the commands of the jobatator server [here](https://github.com/lefuturiste/jobatator/blob/master/pkg/commands/commands.go)
+
+## Internal Entities/Ressources
 
 ### Group
 
