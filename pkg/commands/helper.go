@@ -12,6 +12,8 @@ type CmdDefinition struct {
 	RequireAuth bool
 	UseGroup    bool
 	Args        int
+	Description string
+	Usage       string
 	Handler     func(CmdInterface)
 }
 

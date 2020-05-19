@@ -4,7 +4,6 @@ import (
 	"net"
 	"strings"
 
-	"github.com/lefuturiste/jobatator/pkg/commands"
 	cmds "github.com/lefuturiste/jobatator/pkg/commands"
 	"github.com/lefuturiste/jobatator/pkg/store"
 	log "github.com/sirupsen/logrus"
@@ -50,15 +49,19 @@ func handleClient(conn net.Conn) {
 				if len(components) > 0 {
 					log.Debug("New cmd: ", components)
 					var name string = strings.ToUpper(components[0])
-					var cmdDefinition commands.CmdDefinition
-					cmdDefinition.Args = 0
+					var cmdDefinition cmds.CmdDefinition
+					cmdDefinition.Args = -1
 					cmdDefinition.UseGroup = false
 					cmdDefinition.RequireAuth = false
 					cmd.Parts = components
-					for _, value := range CmdMap {
+					for _, value := range cmds.CmdMap {
 						if value.Name == name {
 							cmdDefinition = value
 						}
+					}
+					if cmdDefinition.Name == "" && name == "HELP" {
+						cmdDefinition.Name = "HELP"
+						cmdDefinition.Handler = cmds.Help
 					}
 					if cmdDefinition.Name == "" {
 						cmds.ReturnError(cmd, "unknown-command")
@@ -113,7 +116,7 @@ func handleCommand(definition cmds.CmdDefinition, cmd cmds.CmdInterface) {
 		}
 	}
 	cmd.User = user
-	if len(cmd.Parts) != definition.Args+1 {
+	if definition.Args != -1 && len(cmd.Parts) != definition.Args+1 {
 		cmds.ReturnError(cmd, "wrong-numbers-arguments")
 		return
 	}
