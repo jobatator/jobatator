@@ -6,7 +6,7 @@ import (
 )
 
 // PublishUniversal - Will add a job on a queue PUBLISH queue_name job_type payload
-func PublishUniversal(parts map[int]string, user store.User) (bool, error) {
+func PublishUniversal(parts map[int]string, user store.User) (string, error) {
 	// find the queue
 	var queue store.Queue
 	for _, value := range store.Queues {
@@ -38,16 +38,16 @@ func PublishUniversal(parts map[int]string, user store.User) (bool, error) {
 
 	go DispatchUniversal()
 
-	return true, nil
+	return job.ID, nil
 }
 
 // Publish - Cli interface
 func Publish(cmd CmdInterface) {
 	result, err := PublishUniversal(cmd.Parts, cmd.User)
 
-	if result {
-		ReturnString(cmd, "OK")
-	} else {
+	if err != nil {
 		ReturnError(cmd, err.Error())
+	} else {
+		ReturnString(cmd, "OK#"+result)
 	}
 }

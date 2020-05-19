@@ -202,7 +202,8 @@ func TestJob(t *testing.T) {
 	// publish the job
 	send(conn, "PUBLISH default job.type '"+jsonStr+"'")
 	reply = readReply(buf)
-	assert.Equal(t, reply, "OK")
+	// to get the id use reply[3:]
+	assert.Equal(t, reply[0:3], "OK#")
 
 	// assert that the job was created
 	debug := getDebug(conn, buf)
