@@ -70,6 +70,9 @@ func LoadConfigFromString(yamlConfig string) {
 	if !Options.TestMode {
 		Options.TestMode = os.Getenv("TEST_MODE") != ""
 	}
+	if !Options.AllowDispatch {
+		Options.AllowDispatch = os.Getenv("ALLOW_DISPATCH") != ""
+	}
 	var logLevel = log.InfoLevel
 	switch strings.ToLower(Options.LogLevel) {
 	case "trace":

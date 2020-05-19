@@ -105,8 +105,8 @@ var CmdMap = []CmdDefinition{
 	}, {
 		Name:        "DISPATCH",
 		Handler:     Dispatch,
-		RequireAuth: true,
-		UseGroup:    true,
+		RequireAuth: false,
+		UseGroup:    false,
 		Description: "Will force the dispatch of jobs accross all the workers",
 	},
 }

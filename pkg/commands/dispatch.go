@@ -81,4 +81,5 @@ func Dispatch(cmd CmdInterface) {
 		return
 	}
 	DispatchUniversal()
+	ReturnString(cmd, "OK")
 }
