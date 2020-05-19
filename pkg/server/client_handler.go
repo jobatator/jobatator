@@ -33,7 +33,6 @@ func handleClient(conn net.Conn) {
 
 				if strings.Count(input, "\r\n") > 1 {
 					componentIndex = 0
-					components = make(map[int]string)
 					for _, component := range strings.Split(input, "\r\n") {
 						if len(component) == 0 {
 							break

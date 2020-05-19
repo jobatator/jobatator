@@ -78,9 +78,6 @@ func Auth(cmd CmdInterface) {
 		return
 	}
 	ReturnString(cmd, "Welcome!")
-	if len(store.Sessions) == 0 {
-		store.Sessions = make([]store.User, 0)
-	}
 	// we add the user to the list of the sessions
 	user.Addr = cmd.Conn.RemoteAddr().String()
 	user.Conn = cmd.Conn

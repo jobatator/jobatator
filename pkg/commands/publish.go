@@ -7,11 +7,8 @@ import (
 
 // PublishUniversal - Will add a job on a queue PUBLISH queue_name job_type payload
 func PublishUniversal(parts map[int]string, user store.User) (bool, error) {
-	if len(store.Queues) == 0 {
-		store.Queues = make([]store.Queue, 0)
-	}
-	var queue store.Queue
 	// find the queue
+	var queue store.Queue
 	for _, value := range store.Queues {
 		if value.Slug == parts[1] {
 			queue = value
@@ -23,9 +20,6 @@ func PublishUniversal(parts map[int]string, user store.User) (bool, error) {
 		queue.Slug = parts[1]
 		queue.Group = user.CurrentGroup
 		store.Queues = append(store.Queues, queue)
-	}
-	if len(queue.Jobs) == 0 {
-		queue.Jobs = make([]store.Job, 0)
 	}
 	var job store.Job
 	job.ID = uniuri.New()

@@ -24,9 +24,6 @@ func Subscribe(cmd CmdInterface) {
 		queue.Group = cmd.User.CurrentGroup
 		store.Queues = append(store.Queues, queue)
 	}
-	if len(queue.Workers) == 0 {
-		queue.Workers = make([]store.User, 0)
-	}
 	cmd.User.Status = store.WorkerAvailable
 	// we register the user as worker in this queue
 	queue.Workers = append(queue.Workers, cmd.User)
