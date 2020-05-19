@@ -1,13 +1,25 @@
-package utils
+package commands
 
 import (
 	"net"
+
+	"github.com/lefuturiste/jobatator/pkg/store"
 )
 
-// CmdInterface -
+// CmdDefinition - Use to define the command
+type CmdDefinition struct {
+	Name        string
+	RequireAuth bool
+	UseGroup    bool
+	Args        int
+	Handler     func(CmdInterface)
+}
+
+// CmdInterface - Passed to command handler
 type CmdInterface struct {
 	Parts map[int]string
 	Conn  net.Conn
+	User  store.User
 }
 
 // ReturnString -

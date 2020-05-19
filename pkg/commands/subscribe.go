@@ -1,25 +1,21 @@
 package commands
 
 import (
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/dchest/uniuri"
+	"github.com/lefuturiste/jobatator/pkg/store"
 )
 
 // Subscribe - If the client is a worker, he will use this cmd to subscribe to a queue
-func Subscribe(cmd utils.CmdInterface) {
-	if len(cmd.Parts) != 2 {
-		utils.ReturnError(cmd, "invalid-input")
-		return
-	}
-	user := utils.FindSession(cmd)
-	if user.CurrentGroup.Slug == "" {
-		utils.ReturnError(cmd, "group-non-selected")
+func Subscribe(cmd CmdInterface) {
+	if cmd.User.CurrentGroup.Slug == "" {
+		ReturnError(cmd, "group-non-selected")
 		return
 	}
 	// find the queue
-	var queue utils.Queue
+	var queue store.Queue
 	var queueKey int
 	// find the queue
-	for key, value := range utils.Queues {
+	for key, value := range store.Queues {
 		if value.Slug == cmd.Parts[1] {
 			queue = value
 			queueKey = key
@@ -27,19 +23,20 @@ func Subscribe(cmd utils.CmdInterface) {
 	}
 	if queue.Slug == "" {
 		// if this queue don't exists, we create it
+		queue.ID = uniuri.New()
 		queue.Slug = cmd.Parts[1]
-		queue.Group = user.CurrentGroup
-		utils.Queues = append(utils.Queues, queue)
+		queue.Group = cmd.User.CurrentGroup
+		store.Queues = append(store.Queues, queue)
 	}
 	if len(queue.Workers) == 0 {
-		queue.Workers = make([]utils.User, 0)
+		queue.Workers = make([]store.User, 0)
 	}
-	user.Status = utils.WorkerAvailable
+	cmd.User.Status = store.WorkerAvailable
 	// we register the user as worker in this queue
-	queue.Workers = append(queue.Workers, user)
-	utils.Queues[queueKey] = queue
+	queue.Workers = append(queue.Workers, cmd.User)
+	store.Queues[queueKey] = queue
 
 	go DispatchUniversal()
 
-	utils.ReturnString(cmd, "OK")
+	ReturnString(cmd, "OK")
 }

@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/lefuturiste/jobatator/pkg/server"
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/lefuturiste/jobatator/pkg/store"
 )
 
 func main() {
-	utils.LoadConfigFromFile("./config.yml")
+	store.LoadConfigFromFile("./config.yml")
 	//go server.StartHTTPServer()
 	server.Start()
 }

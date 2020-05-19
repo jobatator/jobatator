@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/lefuturiste/jobatator/pkg/store"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -22,8 +22,8 @@ func Start() {
 }
 
 func prepareServer() net.Listener {
-	var host string = utils.Options.Host
-	var port string = strconv.FormatInt(int64(utils.Options.Port), 10)
+	var host string = store.Options.Host
+	var port string = strconv.FormatInt(int64(store.Options.Port), 10)
 	listener, err := net.Listen("tcp", host+":"+port)
 	if err != nil {
 		log.Error("Error listening: ", err.Error())

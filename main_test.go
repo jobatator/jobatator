@@ -11,7 +11,7 @@ import (
 	"github.com/dchest/uniuri"
 	"github.com/lefuturiste/jobatator/pkg/commands"
 	"github.com/lefuturiste/jobatator/pkg/server"
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/lefuturiste/jobatator/pkg/store"
 	"github.com/magiconair/properties/assert"
 )
 
@@ -115,46 +115,47 @@ func secondClient(t *testing.T) {
 	assert.Equal(t, len(debug.Queues), 1)
 	assert.Equal(t, debug.Queues[0].Slug, "default")
 
+	// the second client is ready
 	secondClientReady = true
 
 	reply = readReply(buf)
 	var dispatchData commands.DispatchData
 	json.Unmarshal([]byte(reply), &dispatchData)
 	assert.Equal(t, dispatchData.Job.Type, "job.type")
-
 	jsonRaw, _ := json.Marshal(fakeJobArgs)
 	assert.Equal(t, dispatchData.Job.Payload, string(jsonRaw))
 
-	send(conn, "UPDATE_JOB default "+dispatchData.Job.ID+" errored")
+	send(conn, "UPDATE_JOB "+dispatchData.Job.ID+" errored")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "OK")
 
+	// waiting to received one again the job because it is errored
 	reply = readReply(buf)
 	json.Unmarshal([]byte(reply), &dispatchData)
 	assert.Equal(t, dispatchData.Job.State, "errored")
 	debug = getDebug(conn, buf)
-	assert.Equal(t, debug.Queues[0].Jobs[0].State, utils.JobErrored)
-	assert.Equal(t, debug.Queues[0].Workers[0].Status, utils.WorkerAvailable)
+	assert.Equal(t, debug.Queues[0].Jobs[0].State, store.JobErrored)
+	assert.Equal(t, debug.Queues[0].Workers[0].Status, store.WorkerAvailable)
 
-	send(conn, "UPDATE_JOB default "+dispatchData.Job.ID+" in-progress")
+	send(conn, "UPDATE_JOB "+dispatchData.Job.ID+" in-progress")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "OK")
 	debug = getDebug(conn, buf)
-	assert.Equal(t, debug.Queues[0].Jobs[0].State, utils.JobInProgress)
-	assert.Equal(t, debug.Queues[0].Workers[0].Status, utils.WorkerBusy)
+	assert.Equal(t, debug.Queues[0].Jobs[0].State, store.JobInProgress)
+	assert.Equal(t, debug.Queues[0].Workers[0].Status, store.WorkerBusy)
 
-	send(conn, "UPDATE_JOB default "+dispatchData.Job.ID+" done")
+	send(conn, "UPDATE_JOB "+dispatchData.Job.ID+" done")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "OK")
 	debug = getDebug(conn, buf)
-	assert.Equal(t, debug.Queues[0].Jobs[0].State, utils.JobDone)
-	assert.Equal(t, debug.Queues[0].Workers[0].Status, utils.WorkerAvailable)
+	assert.Equal(t, debug.Queues[0].Jobs[0].State, store.JobDone)
+	assert.Equal(t, debug.Queues[0].Workers[0].Status, store.WorkerAvailable)
 
 	secondClientReady = true
 }
 
 func TestJob(t *testing.T) {
-	utils.LoadConfigFromString(testConfig)
+	store.LoadConfigFromString(testConfig)
 	server.StartAsync()
 
 	go secondClient(t)
@@ -182,6 +183,7 @@ func TestJob(t *testing.T) {
 	reply = readReply(buf)
 	assert.Equal(t, reply, "OK")
 
+	// wait for the second client to be ready
 	for !secondClientReady {
 	}
 	secondClientReady = false
@@ -197,10 +199,21 @@ func TestJob(t *testing.T) {
 	assert.Equal(t, debug.Queues[0].Jobs[0].Type, "job.type")
 	assert.Equal(t, debug.Queues[0].Jobs[0].Payload, jsonStr)
 
+	// wait for the second client to process the job
 	for !secondClientReady {
 	}
+	secondClientReady = false
 
 	send(conn, "PING")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "PONG")
+
+	send(conn, "DELETE_JOB "+debug.Queues[0].Jobs[0].ID)
+	beforeCount := len(debug.Queues[0].Jobs)
+	reply = readReply(buf)
+	assert.Equal(t, reply, "OK")
+
+	debug = getDebug(conn, buf)
+	assert.Equal(t, len(debug.Queues[0].Jobs), beforeCount-1)
+
 }

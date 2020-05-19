@@ -4,65 +4,66 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/lefuturiste/jobatator/pkg/store"
 )
 
 // Debug -
-func Debug(cmd utils.CmdInterface) {
-	utils.ReturnString(cmd, "== GROUPS ==")
-	for _, group := range utils.Options.Groups {
-		utils.ReturnString(cmd, "- slug: "+group.Slug)
+func Debug(cmd CmdInterface) {
+	ReturnString(cmd, "== GROUPS ==")
+	for _, group := range store.Options.Groups {
+		ReturnString(cmd, "- slug: "+group.Slug)
 	}
 
-	utils.ReturnString(cmd, "\n== SESSION USERS ==")
-	for _, user := range utils.Sessions {
-		utils.ReturnString(cmd, "- username: "+user.Username)
-		utils.ReturnString(cmd, "  currentGroup: "+user.CurrentGroup.Slug)
-		utils.ReturnString(cmd, "  addr: "+user.Addr)
+	ReturnString(cmd, "\n== SESSION USERS ==")
+	for _, user := range store.Sessions {
+		ReturnString(cmd, "- username: "+user.Username)
+		ReturnString(cmd, "  currentGroup: "+user.CurrentGroup.Slug)
+		ReturnString(cmd, "  addr: "+user.Addr)
 	}
 
-	utils.ReturnString(cmd, "\n== QUEUES ==")
-	for _, queue := range utils.Queues {
-		utils.ReturnString(cmd, "- slug: "+queue.Slug)
-		utils.ReturnString(cmd, "  jobs: "+strconv.FormatInt(int64(len(queue.Jobs)), 10))
+	ReturnString(cmd, "\n== QUEUES ==")
+	for _, queue := range store.Queues {
+		ReturnString(cmd, "- slug: "+queue.Slug)
+		ReturnString(cmd, "  id: "+queue.ID)
+		ReturnString(cmd, "  jobs: "+strconv.FormatInt(int64(len(queue.Jobs)), 10))
 		for _, job := range queue.Jobs {
-			utils.ReturnString(cmd, "    - id: "+job.ID)
-			utils.ReturnString(cmd, "      type: "+job.Type)
-			utils.ReturnString(cmd, "      state: "+job.State)
-			utils.ReturnString(cmd, "      payload: "+job.Payload)
+			ReturnString(cmd, "    - id: "+job.ID)
+			ReturnString(cmd, "      type: "+job.Type)
+			ReturnString(cmd, "      state: "+job.State)
+			ReturnString(cmd, "      payload: "+job.Payload)
 		}
-		utils.ReturnString(cmd, "  workers: "+strconv.FormatInt(int64(len(queue.Workers)), 10))
+		ReturnString(cmd, "  workers: "+strconv.FormatInt(int64(len(queue.Workers)), 10))
 		for _, worker := range queue.Workers {
-			utils.ReturnString(cmd, "    - addr: "+worker.Addr)
-			utils.ReturnString(cmd, "      username: "+worker.Username)
-			utils.ReturnString(cmd, "      status: "+worker.Status)
+			ReturnString(cmd, "    - addr: "+worker.Addr)
+			ReturnString(cmd, "      username: "+worker.Username)
+			ReturnString(cmd, "      status: "+worker.Status)
 		}
 
 	}
-	if len(utils.Queues) == 0 {
-		utils.ReturnString(cmd, "No queues")
+	if len(store.Queues) == 0 {
+		ReturnString(cmd, "No queues")
 	}
 }
 
 // DebugOutput -
 type DebugOutput struct {
-	Queues   []utils.Queue
-	Groups   []utils.Group
-	Sessions []utils.User
-	Users    []utils.User
+	Queues   []store.Queue
+	Groups   []store.Group
+	Sessions []store.User
+	Users    []store.User
 	Host     string
 	Port     int
 }
 
 // DebugJSON -
-func DebugJSON(cmd utils.CmdInterface) {
+func DebugJSON(cmd CmdInterface) {
 	var debubOutput DebugOutput
-	debubOutput.Queues = utils.Queues
-	debubOutput.Groups = utils.Options.Groups
-	debubOutput.Sessions = utils.Sessions
-	debubOutput.Users = utils.Options.Users
-	debubOutput.Host = utils.Options.Host
-	debubOutput.Port = utils.Options.Port
+	debubOutput.Queues = store.Queues
+	debubOutput.Groups = store.Options.Groups
+	debubOutput.Sessions = store.Sessions
+	debubOutput.Users = store.Options.Users
+	debubOutput.Host = store.Options.Host
+	debubOutput.Port = store.Options.Port
 	rawJSON, _ := json.Marshal(debubOutput)
-	utils.ReturnString(cmd, string(rawJSON))
+	ReturnString(cmd, string(rawJSON))
 }

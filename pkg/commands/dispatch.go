@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/lefuturiste/jobatator/pkg/store"
 )
 
 // Dispatch -
@@ -30,7 +30,7 @@ for each queue:
 
 // DispatchData -
 type DispatchData struct {
-	Job   utils.Job
+	Job   store.Job
 	Debug string
 }
 
@@ -42,22 +42,23 @@ func DispatchUniversal() {
 // DispatchUniversalWithDelay -
 func DispatchUniversalWithDelay(delay int) {
 	time.Sleep(time.Duration(delay) * time.Second)
-	for _, queue := range utils.Queues {
+
+	for _, queue := range store.Queues {
 		for _, job := range queue.Jobs {
 
 			// check if a job has expired, if the job expired, set as pending
-			if job.Type == utils.JobInProgress && job.Attempts < 3 {
+			if job.Type == store.JobInProgress && job.Attempts < 3 {
 				duration := time.Since(job.StartedProcessingAt)
 				if duration.Minutes() > 5 {
 					// we consider the job as expired if the job started processing 5 min ago
-					job.State = utils.JobPending
+					job.State = store.JobPending
 				}
 			}
 
-			if job.State == utils.JobPending || job.State == utils.JobErrored {
+			if job.State == store.JobPending || job.State == store.JobErrored {
 				// if the job is pending or errored we send the job to a available worker
 				for _, worker := range queue.Workers {
-					if worker.Status == utils.WorkerAvailable {
+					if worker.Status == store.WorkerAvailable {
 						// send the job
 						dispatchData := DispatchData{
 							Job:   job,
@@ -74,6 +75,6 @@ func DispatchUniversalWithDelay(delay int) {
 }
 
 // Dispatch -
-func Dispatch(cmd utils.CmdInterface) {
+func Dispatch(cmd CmdInterface) {
 	DispatchUniversal()
 }

@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/lefuturiste/jobatator/pkg/commands"
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/lefuturiste/jobatator/pkg/store"
 )
 
 // PublishHTTPInput -
@@ -42,8 +42,8 @@ func StartHTTPServer() {
 			return
 		}
 		authComponents[1] = strings.Replace(authComponents[1], "\n", "", 1)
-		var user utils.User
-		for _, val := range utils.Options.Users {
+		var user store.User
+		for _, val := range store.Options.Users {
 			if val.Username == authComponents[0] && val.Password == authComponents[1] {
 				user = val
 			}
@@ -81,6 +81,6 @@ func StartHTTPServer() {
 		fmt.Fprintf(w, "{\"success\": true}")
 	})
 
-	webListeningStr := utils.Options.Host + ":" + strconv.FormatInt(int64(utils.Options.WebPort), 10)
+	webListeningStr := store.Options.Host + ":" + strconv.FormatInt(int64(store.Options.WebPort), 10)
 	http.ListenAndServe(webListeningStr, nil)
 }

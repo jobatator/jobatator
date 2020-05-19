@@ -4,47 +4,48 @@ import (
 	"errors"
 
 	"github.com/dchest/uniuri"
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/lefuturiste/jobatator/pkg/store"
 )
 
 // PublishUniversal - Will add a job on a queue PUBLISH queue_name job_type payload
-func PublishUniversal(parts map[int]string, user utils.User) (bool, error) {
+func PublishUniversal(parts map[int]string, user store.User) (bool, error) {
 	if len(parts) != 4 {
 		return false, errors.New("invalid-input")
 	}
 	if user.CurrentGroup.Slug == "" {
 		return false, errors.New("group-non-selected")
 	}
-	if len(utils.Queues) == 0 {
-		utils.Queues = make([]utils.Queue, 0)
+	if len(store.Queues) == 0 {
+		store.Queues = make([]store.Queue, 0)
 	}
-	var queue utils.Queue
+	var queue store.Queue
 	// find the queue
-	for _, value := range utils.Queues {
+	for _, value := range store.Queues {
 		if value.Slug == parts[1] {
 			queue = value
 		}
 	}
 	if queue.Slug == "" {
 		// if this queue don't exists, we create it
+		queue.ID = uniuri.New()
 		queue.Slug = parts[1]
 		queue.Group = user.CurrentGroup
-		utils.Queues = append(utils.Queues, queue)
+		store.Queues = append(store.Queues, queue)
 	}
 	if len(queue.Jobs) == 0 {
-		queue.Jobs = make([]utils.Job, 0)
+		queue.Jobs = make([]store.Job, 0)
 	}
-	var job utils.Job
+	var job store.Job
 	job.ID = uniuri.New()
-	job.State = utils.JobPending
+	job.State = store.JobPending
 	job.Type = parts[2]
 	job.Payload = parts[3]
 	queue.Jobs = append(queue.Jobs, job)
 
 	// update the queue state into the db
-	for key, value := range utils.Queues {
+	for key, value := range store.Queues {
 		if value.Slug == queue.Slug {
-			utils.Queues[key] = queue
+			store.Queues[key] = queue
 		}
 	}
 	// if a worker is availaible, notify a worker
@@ -55,13 +56,12 @@ func PublishUniversal(parts map[int]string, user utils.User) (bool, error) {
 }
 
 // Publish - Cli interface
-func Publish(cmd utils.CmdInterface) {
-	user := utils.FindSession(cmd)
-	result, err := PublishUniversal(cmd.Parts, user)
+func Publish(cmd CmdInterface) {
+	result, err := PublishUniversal(cmd.Parts, cmd.User)
 
 	if result {
-		utils.ReturnString(cmd, "OK")
+		ReturnString(cmd, "OK")
 	} else {
-		utils.ReturnError(cmd, err.Error())
+		ReturnError(cmd, err.Error())
 	}
 }

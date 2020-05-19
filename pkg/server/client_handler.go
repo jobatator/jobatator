@@ -4,7 +4,9 @@ import (
 	"net"
 	"strings"
 
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/lefuturiste/jobatator/pkg/commands"
+	cmds "github.com/lefuturiste/jobatator/pkg/commands"
+	"github.com/lefuturiste/jobatator/pkg/store"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -14,7 +16,9 @@ func handleClient(conn net.Conn) {
 	var input string
 	var componentIndex int
 	var components map[int]string
-	var user utils.User
+	cmd := cmds.CmdInterface{
+		Conn: conn,
+	}
 	for {
 		message = true
 		buf := make([]byte, 1024)
@@ -46,26 +50,20 @@ func handleClient(conn net.Conn) {
 				if len(components) > 0 {
 					log.Debug("New cmd: ", components)
 					var name string = strings.ToUpper(components[0])
-
-					for _, val := range utils.Sessions {
-						if val.Addr == conn.RemoteAddr().String() {
-							user = val
+					var cmdDefinition commands.CmdDefinition
+					cmdDefinition.Args = 0
+					cmdDefinition.UseGroup = false
+					cmdDefinition.RequireAuth = false
+					cmd.Parts = components
+					for _, value := range CmdMap {
+						if value.Name == name {
+							cmdDefinition = value
 						}
 					}
-					if user.Username == "" && name != "AUTH" {
-						conn.Write([]byte("Err: not-logged"))
-						conn.Write([]byte("\r\n"))
+					if cmdDefinition.Name == "" {
+						cmds.ReturnError(cmd, "unknown-command")
 					} else {
-						cmd := utils.CmdInterface{
-							Parts: components,
-							Conn:  conn,
-						}
-						if CmdMap[name] == nil {
-							conn.Write([]byte("Err: unkown-command"))
-							conn.Write([]byte("\r\n"))
-						} else {
-							CmdMap[name].(func(utils.CmdInterface))(cmd)
-						}
+						handleCommand(cmdDefinition, cmd)
 					}
 				}
 
@@ -78,26 +76,46 @@ func handleClient(conn net.Conn) {
 			input = input + string(buf)
 		}
 	}
-	if user.Username != "" {
+	if store.FindSession(cmd.Conn).Username != "" {
 		currentAddr := conn.RemoteAddr().String()
 		// remove user from the session array
-		var newSessions []utils.User
-		for _, val := range utils.Sessions {
+		var newSessions []store.User
+		for _, val := range store.Sessions {
 			if currentAddr != val.Addr {
 				newSessions = append(newSessions, val)
 			}
 		}
-		utils.Sessions = newSessions
+		store.Sessions = newSessions
 
 		// remove user from all the worker inside the queues
-		for key, queue := range utils.Queues {
-			var newWorkers []utils.User
+		for key, queue := range store.Queues {
+			var newWorkers []store.User
 			for _, worker := range queue.Workers {
 				if currentAddr != worker.Addr {
 					newWorkers = append(newWorkers, worker)
 				}
 			}
-			utils.Queues[key].Workers = newWorkers
+			store.Queues[key].Workers = newWorkers
 		}
 	}
+}
+
+func handleCommand(definition cmds.CmdDefinition, cmd cmds.CmdInterface) {
+	user := store.FindSession(cmd.Conn)
+	if definition.RequireAuth && user.Username == "" {
+		cmds.ReturnError(cmd, "not-logged")
+		return
+	}
+	if definition.UseGroup {
+		if user.CurrentGroup.Slug == "" {
+			cmds.ReturnError(cmd, "group-non-selected")
+			return
+		}
+	}
+	cmd.User = user
+	if len(cmd.Parts) != definition.Args+1 {
+		cmds.ReturnError(cmd, "wrong-numbers-arguments")
+		return
+	}
+	definition.Handler(cmd)
 }
