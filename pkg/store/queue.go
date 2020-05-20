@@ -2,6 +2,8 @@ package store
 
 import (
 	"errors"
+
+	"github.com/dchest/uniuri"
 )
 
 // Queues - Contain all the stored queues
@@ -39,14 +41,25 @@ func FindQueue(id string) (Queue, error) {
 }
 
 // FindQueueBySlug - Will find a queue with a slug in a group
-func FindQueueBySlug(slugToFind string, group Group) (Queue, error) {
-	for _, queue := range Queues {
-		if queue.Group.Slug == group.Slug && queue.Slug == slugToFind {
-			queue.Group = group
-			return queue, nil
+//                   If create flag set to true, the queue will be created
+func FindQueueBySlug(slugToFind string, group Group, create bool) (Queue, error) {
+	var queue Queue
+	for _, value := range Queues {
+		if value.Group.Slug == group.Slug && value.Slug == slugToFind {
+			value.Group = group
+			queue = value
 		}
 	}
-	return Queue{}, errors.New("unknown-queue")
+	if create && queue.ID == "" {
+		// if this queue don't exists, we create it
+		queue.ID = uniuri.New()
+		queue.Slug = slugToFind
+		queue.Group = group
+		Queues = append(Queues, queue)
+	} else if queue.ID == "" {
+		return queue, errors.New("unknown-queue")
+	}
+	return queue, nil
 }
 
 // Update - Will update a queue

@@ -21,7 +21,7 @@ func ListQueues(cmd CmdInterface) {
 
 // DeleteQueue - Delete a queue
 func DeleteQueue(cmd CmdInterface) {
-	queue, err := store.FindQueueBySlug(cmd.Parts[1], cmd.User.CurrentGroup)
+	queue, err := store.FindQueueBySlug(cmd.Parts[1], cmd.User.CurrentGroup, false)
 	if err != nil {
 		ReturnError(cmd, err.Error())
 		return

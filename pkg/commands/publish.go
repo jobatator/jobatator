@@ -7,35 +7,18 @@ import (
 
 // PublishUniversal - Will add a job on a queue PUBLISH queue_name job_type payload
 func PublishUniversal(parts map[int]string, user store.User) (string, error) {
-	// find the queue
-	var queue store.Queue
-	for _, value := range store.Queues {
-		if value.Slug == parts[1] {
-			queue = value
-		}
-	}
-	if queue.Slug == "" {
-		// if this queue don't exists, we create it
-		queue.ID = uniuri.New()
-		queue.Slug = parts[1]
-		queue.Group = user.CurrentGroup
-		store.Queues = append(store.Queues, queue)
-	}
+	queue, _ := store.FindQueueBySlug(parts[1], user.CurrentGroup, true)
+
+	// create a job
 	var job store.Job
 	job.ID = uniuri.New()
 	job.State = store.JobPending
 	job.Type = parts[2]
 	job.Payload = parts[3]
 	queue.Jobs = append(queue.Jobs, job)
+	queue.Update(false)
 
-	// update the queue state into the db
-	for key, value := range store.Queues {
-		if value.Slug == queue.Slug {
-			store.Queues[key] = queue
-		}
-	}
-	// if a worker is availaible, notify a worker
-
+	// dispatch the created job
 	go DispatchUniversal()
 
 	return job.ID, nil

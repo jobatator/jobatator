@@ -9,7 +9,7 @@ import (
 
 // ListJobs - List all jobs in a queue
 func ListJobs(cmd CmdInterface) {
-	queue, err := store.FindQueueBySlug(cmd.Parts[1], cmd.User.CurrentGroup)
+	queue, err := store.FindQueueBySlug(cmd.Parts[1], cmd.User.CurrentGroup, false)
 	if err != nil {
 		ReturnError(cmd, err.Error())
 		return
