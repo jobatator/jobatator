@@ -1,86 +1,99 @@
 package server
 
 import (
-	"encoding/base64"
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"strconv"
-	"strings"
 
-	"github.com/lefuturiste/jobatator/pkg/commands"
 	"github.com/lefuturiste/jobatator/pkg/store"
+	log "github.com/sirupsen/logrus"
 )
 
-// PublishHTTPInput -
-type PublishHTTPInput struct {
-	Group   string
-	Queue   string
-	Type    string
-	Payload string
+type gatewayHTTPInput struct {
+	Commands []string `json:"commands"`
+}
+
+type httpError struct {
+	Message string `json:"message"`
+	Code    string `json:"code"`
+}
+
+type gatewayHTTPOutput struct {
+	Success bool        `json:"success"`
+	Data    []string    `json:"data"`
+	Errors  []httpError `json:"errors"`
 }
 
 // StartHTTPServer -
 func StartHTTPServer() {
-	http.HandleFunc("/publish", func(w http.ResponseWriter, r *http.Request) {
+	if store.Options.WebPort < 1 {
+		return
+	}
+
+	http.HandleFunc("/gateway", func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Content-Type", "application/json")
+
 		if r.Method != "POST" {
 			http.StatusText(http.StatusMethodNotAllowed)
-			fmt.Fprintf(w, "Err: method not allowed")
-			return
-		}
-		if r.Header.Get("Authorization") == "" {
-			http.StatusText(http.StatusUnauthorized)
-			fmt.Fprintf(w, "Err: not logged")
-			return
-		}
-		sDec, _ := base64.StdEncoding.DecodeString(strings.Replace(r.Header.Get("Authorization"), "Basic ", "", 1))
-		authComponents := strings.Split(string(sDec), ":")
-		if len(authComponents) != 2 {
-			http.StatusText(http.StatusUnauthorized)
-			fmt.Fprintf(w, "Err: invalid format for authorization header")
-			return
-		}
-		authComponents[1] = strings.Replace(authComponents[1], "\n", "", 1)
-		var user store.User
-		for _, val := range store.Options.Users {
-			if val.Username == authComponents[0] && val.Password == authComponents[1] {
-				user = val
-			}
-		}
-		if user.Username == "" {
-			http.StatusText(http.StatusUnauthorized)
-			fmt.Fprintf(w, "Err: invalid creds")
+			resp, _ := json.Marshal(gatewayHTTPOutput{
+				Success: false,
+				Errors:  []httpError{{Message: "Method not allowed", Code: "method-not-allowed"}},
+			})
+			fmt.Fprintf(w, string(resp))
 			return
 		}
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			http.StatusText(http.StatusInternalServerError)
-			fmt.Fprintf(w, "Err: invalid body")
+			resp, _ := json.Marshal(gatewayHTTPOutput{
+				Success: false,
+				Errors:  []httpError{{Message: "Invalid body", Code: "invalid-body"}},
+			})
+			fmt.Fprintf(w, string(resp))
 			return
 		}
-
-		var bodyFormated PublishHTTPInput
-		json.Unmarshal(body, &bodyFormated)
-
-		group, err := commands.UseGroupUniversal(bodyFormated.Group, user)
-		if err != nil {
+		//fmt.Println(string(body))
+		var bodyFormated gatewayHTTPInput
+		err = json.Unmarshal(body, &bodyFormated)
+		if err != nil || len(bodyFormated.Commands) == 0 {
 			http.StatusText(http.StatusBadRequest)
-			fmt.Fprintf(w, "Err: "+err.Error())
+			resp, _ := json.Marshal(gatewayHTTPOutput{
+				Success: false,
+				Errors:  []httpError{{Message: "Invalid body", Code: "invalid-body"}},
+			})
+			fmt.Fprintf(w, string(resp))
 			return
 		}
-		user.CurrentGroup = group
 
-		parts := map[int]string{
-			0: "PUBLISH",
-			1: bodyFormated.Queue,
-			2: bodyFormated.Type,
-			3: bodyFormated.Payload,
+		// connect to this socket
+		conn, _ := net.Dial("tcp", store.Options.Host+":"+strconv.FormatInt(int64(store.Options.Port), 10))
+
+		output := gatewayHTTPOutput{
+			Success: true,
+			Errors:  []httpError{},
 		}
-		commands.PublishUniversal(parts, user)
-		fmt.Fprintf(w, "{\"success\": true}")
+		for _, command := range bodyFormated.Commands {
+			// send to socket
+			fmt.Fprintf(conn, command+"\n")
+			// listen for reply
+			message, _ := bufio.NewReader(conn).ReadString('\n')
+			message = message[:len(message)-1]
+
+			output.Data = append(output.Data, message)
+		}
+		conn.Close()
+
+		resp, _ := json.Marshal(output)
+		fmt.Fprintf(w, string(resp))
 	})
 
 	webListeningStr := store.Options.Host + ":" + strconv.FormatInt(int64(store.Options.WebPort), 10)
+
+	log.Info("Web server listening on " + webListeningStr)
 	http.ListenAndServe(webListeningStr, nil)
 }
