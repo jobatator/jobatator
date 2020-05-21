@@ -63,7 +63,7 @@ func (job Job) Update() error {
 	}
 	job.Queue = Queue{}
 	queue.Jobs[jobKey] = job
-	queue.Update(false)
+	queue.Update()
 	return nil
 }
 
@@ -80,7 +80,7 @@ func (job Job) Delete() error {
 		}
 	}
 	queue.Jobs = newJobs
-	err = queue.Update(false)
+	err = queue.Update()
 	if err != nil {
 		return err
 	}

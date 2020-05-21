@@ -108,5 +108,13 @@ var CmdMap = []CmdDefinition{
 		RequireAuth: false,
 		UseGroup:    false,
 		Description: "Will force the dispatch of jobs accross all the workers",
+	}, {
+		Name:        "RECURRENT_JOB",
+		Handler:     DeclareRecurrentJob,
+		RequireAuth: true,
+		UseGroup:    true,
+		Args:        3,
+		Usage:       "RECURRENT_JOB {queue_slug} {job_type} {cron_instruction}",
+		Description: "Declare recurrent job on a queue",
 	},
 }

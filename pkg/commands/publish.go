@@ -16,7 +16,9 @@ func PublishUniversal(parts map[int]string, user store.User) (string, error) {
 	job.Type = parts[2]
 	job.Payload = parts[3]
 	queue.Jobs = append(queue.Jobs, job)
-	queue.Update(false)
+
+	// we do not want to keep any field just take what ever the queue have
+	queue.Update()
 
 	// dispatch the created job
 	go DispatchUniversal()

@@ -68,7 +68,7 @@ func UpdateJob(cmd CmdInterface) {
 			job.Queue.Workers[key] = cmd.User
 		}
 	}
-	job.Queue.Update(true)
+	job.Queue.UpdateAndKeep([]string{"Jobs"})
 
 	if delay != -1 {
 		go DispatchUniversalWithDelay(delay)

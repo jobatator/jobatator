@@ -2,6 +2,8 @@ package store
 
 import (
 	"errors"
+	"fmt"
+	"reflect"
 
 	"github.com/dchest/uniuri"
 )
@@ -11,11 +13,12 @@ var Queues []Queue
 
 // Queue -
 type Queue struct {
-	ID      string
-	Slug    string
-	Group   Group
-	Jobs    []Job
-	Workers []User
+	ID            string
+	Slug          string
+	Group         Group
+	RecurrentJobs []RecurrentJob
+	Jobs          []Job
+	Workers       []User
 }
 
 // ListQueue - Return all queues in a group
@@ -62,12 +65,20 @@ func FindQueueBySlug(slugToFind string, group Group, create bool) (Queue, error)
 	return queue, nil
 }
 
-// Update - Will update a queue
-func (queue Queue) Update(keepJobs bool) error {
+// Update -
+func (queue Queue) Update() error {
+	return queue.UpdateAndKeep([]string{})
+}
+
+// UpdateAndKeep - Will update a queue
+func (queue Queue) UpdateAndKeep(toKeepFields []string) error {
 	for key, value := range Queues {
 		if value.ID == queue.ID {
-			if keepJobs {
-				queue.Jobs = value.Jobs
+			for _, field := range toKeepFields {
+				fmt.Println(field)
+				reflect.ValueOf(&queue).Elem().FieldByName(field).Set(
+					reflect.ValueOf(&value).Elem().FieldByName(field),
+				)
 			}
 			Queues[key] = queue
 			return nil

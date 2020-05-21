@@ -11,7 +11,7 @@ func Subscribe(cmd CmdInterface) {
 	// we register the user as worker in this queue
 	cmd.User.Status = store.WorkerAvailable
 	queue.Workers = append(queue.Workers, cmd.User)
-	queue.Update(true)
+	queue.Update()
 
 	// dispatch old jobs
 	go DispatchUniversal()
