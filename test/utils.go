@@ -2,6 +2,7 @@ package test
 
 import (
 	"bufio"
+	"encoding/json"
 	"net"
 	"strings"
 
@@ -44,6 +45,10 @@ func getConn() net.Conn {
 	tcpAddr, _ := net.ResolveTCPAddr("tcp", "localhost:8964")
 	conn, _ := net.DialTCP("tcp", nil, tcpAddr)
 	return conn
+}
+
+func readJSONReply(buf *bufio.Reader, value interface{}) error {
+	return json.Unmarshal([]byte(readReply(buf)), &value)
 }
 
 func readReply(buf *bufio.Reader) string {
