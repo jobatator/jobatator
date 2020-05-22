@@ -31,6 +31,13 @@ var CmdMap = []CmdDefinition{
 		Usage:       "USE_GROUP {group}",
 		Description: "Declare which group the client want to use",
 	}, {
+		Name:        "DEBUG_PARTS",
+		Handler:     DebugParts,
+		RequireAuth: false,
+		UseGroup:    false,
+		Args:        -1,
+		Description: "Dump parsed command parts",
+	}, {
 		Name:        "DEBUG",
 		Handler:     Debug,
 		RequireAuth: false,

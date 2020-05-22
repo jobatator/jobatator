@@ -26,7 +26,17 @@ type CmdInterface struct {
 
 // ReturnString -
 func ReturnString(cmd CmdInterface, data string) {
-	cmd.Conn.Write([]byte(data))
+	var buf []byte
+	for _, char := range []byte(data) {
+		if len(buf) == 1024 {
+			cmd.Conn.Write(buf)
+			buf = []byte{}
+		}
+		buf = append(buf, char)
+	}
+	if len(buf) > 0 {
+		cmd.Conn.Write(buf)
+	}
 	NewLine(cmd)
 }
 

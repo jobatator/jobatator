@@ -2,7 +2,6 @@ package store
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 
 	"github.com/dchest/uniuri"
@@ -75,7 +74,6 @@ func (queue Queue) UpdateAndKeep(toKeepFields []string) error {
 	for key, value := range Queues {
 		if value.ID == queue.ID {
 			for _, field := range toKeepFields {
-				fmt.Println(field)
 				reflect.ValueOf(&queue).Elem().FieldByName(field).Set(
 					reflect.ValueOf(&value).Elem().FieldByName(field),
 				)

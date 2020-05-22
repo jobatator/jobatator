@@ -75,3 +75,17 @@ func DebugJSON(cmd CmdInterface) {
 	rawJSON, _ := json.Marshal(debubOutput)
 	ReturnString(cmd, string(rawJSON))
 }
+
+// DebugParts -
+func DebugParts(cmd CmdInterface) {
+	if !store.Options.TestMode {
+		ReturnError(cmd, "test-mode-disabled")
+		return
+	}
+	var parts []string
+	for i := 0; i < len(cmd.Parts); i++ {
+		parts = append(parts, cmd.Parts[i])
+	}
+	rawJSON, _ := json.Marshal(parts)
+	ReturnString(cmd, string(rawJSON))
+}

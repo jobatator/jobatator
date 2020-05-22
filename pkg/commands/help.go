@@ -2,7 +2,6 @@ package commands
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Help - List all commands or get help about a specific command
@@ -39,7 +38,6 @@ func Help(cmd CmdInterface) {
 			cmdOutput.Usage = cmdOutput.Name
 		}
 		rawJSON, _ := json.Marshal(cmdOutput)
-		fmt.Println(string(rawJSON))
 		ReturnString(cmd, string(rawJSON))
 	} else {
 		// list all commands
