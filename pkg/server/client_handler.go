@@ -14,7 +14,7 @@ func handleClient(conn net.Conn) {
 	var message bool
 	var input string
 	var componentIndex int
-	var components map[int]string
+	components := make(map[int]string)
 	cmd := cmds.CmdInterface{
 		Conn: conn,
 	}
@@ -30,7 +30,6 @@ func handleClient(conn net.Conn) {
 			if 0 == value {
 				// 10 mean linefeed, so end of the line
 				input += string(buf)[0:index]
-
 				if strings.Count(input, "\r\n") > 1 {
 					componentIndex = 0
 					for _, component := range strings.Split(input, "\r\n") {

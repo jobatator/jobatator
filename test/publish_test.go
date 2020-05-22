@@ -9,31 +9,9 @@ import (
 
 	"github.com/dchest/uniuri"
 	"github.com/lefuturiste/jobatator/pkg/commands"
-	"github.com/lefuturiste/jobatator/pkg/server"
 	"github.com/lefuturiste/jobatator/pkg/store"
 	"github.com/magiconair/properties/assert"
 )
-
-const testConfig = `
-port: 8963
-host: "0.0.0.0"
-groups:
-    - slug: "group1"
-    - slug: "group2"
-    - slug: "group3"
-
-users:
-    - username: "user1"
-      password: "pass1"
-      groups: ["group1"]
-    - username: "user2"
-      password: "pass1"
-      groups: ["group2", "group3"]
-
-delay_policy: "IGNORE"
-test_mode: true
-log_level: "DEBUG"
-`
 
 type FooObject struct {
 	ID        string
@@ -140,8 +118,7 @@ func secondClient(t *testing.T) {
 }
 
 func TestJob(t *testing.T) {
-	store.LoadConfigFromString(testConfig)
-	server.StartAsync()
+	startServer()
 
 	go secondClient(t)
 

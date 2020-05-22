@@ -5,21 +5,11 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/lefuturiste/jobatator/pkg/server"
-	"github.com/lefuturiste/jobatator/pkg/store"
 	"github.com/magiconair/properties/assert"
 )
 
-const simpleConfig = `
-port: 8963
-host: "0.0.0.0"
-test_mode: true
-log_level: "DEBUG"
-`
-
 func TestConnexion(t *testing.T) {
-	store.LoadConfigFromString(simpleConfig)
-	server.StartAsync()
+	startServer()
 
 	conn := getConn()
 	buf := bufio.NewReader(conn)

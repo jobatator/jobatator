@@ -7,7 +7,7 @@ COPY . .
 RUN go get -d -v ./...
 RUN go install -v ./...
 RUN go build -o jobatator main.go
-RUN go test
+RUN go test -count=1 -v ./test/
 
 EXPOSE 8962
 EXPOSE 8952
