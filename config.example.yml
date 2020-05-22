@@ -12,6 +12,8 @@ allow_dispatch: false # optional, default to false, if set to true, then the dis
 log_level: "warning" # optional, default to "info", will set the log level of the App
 # allowed values: "trace" | "debug" | "warn" | "error" | "fatal" | "panic"
 
+job_timeout: 120 # optional, default to 0, the duration in seconds after which a done job will be deleted.
+
 groups:
     - slug: "your_group_1"
     - slug: "your_group_2"

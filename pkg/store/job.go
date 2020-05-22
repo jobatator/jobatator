@@ -86,3 +86,13 @@ func (job Job) Delete() error {
 	}
 	return nil
 }
+
+// Expire - Will delete a job after a timeout in seconds
+func (job Job) Expire(timeout int) error {
+	time.Sleep(time.Duration(timeout) * time.Second)
+	err := job.Delete()
+	if err != nil {
+		return err
+	}
+	return nil
+}

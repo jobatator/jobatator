@@ -29,6 +29,7 @@ users:
 delay_policy: "IGNORE"
 test_mode: true
 log_level: "DEBUG"
+job_timeout: 2
 `
 
 var serverStarted bool

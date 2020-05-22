@@ -74,6 +74,10 @@ func UpdateJob(cmd CmdInterface) {
 		go DispatchUniversalWithDelay(delay)
 	}
 
+	if job.State == store.JobDone {
+		go job.Expire(store.Options.JobTimeout)
+	}
+
 	ReturnString(cmd, "OK")
 }
 

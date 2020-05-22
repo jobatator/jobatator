@@ -32,6 +32,7 @@ type Config struct {
 	Users         []User
 	Host          string
 	Port          int
+	JobTimeout    int    `yaml:"job_timeout"`
 	WebPort       int    `yaml:"web_port"`
 	DelayPolicy   string `yaml:"delay_policy"`
 	LogLevel      string `yaml:"log_level"`
