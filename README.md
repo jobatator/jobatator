@@ -83,3 +83,31 @@ You can find description of all the commands of the jobatator server [here](http
 - Attempts:            int
 - StartedProcessingAt: timestamp
 - EndProcessingAt:     timestamp
+
+## Roadmap/Todolist
+
+- Being able to mock commands and not necessarly use the socket interface (can be usefull for the http gateway interface but also for unit tests)
+    - Should we use a CmdOutput struct type?
+    - Should we use a (string, error) return tuple type?
+- User that have * groups can access all groups and are considered as an administrator
+- Get stat about a queue (number of job of certain state and type)
+    - By job.type and By all:
+        - How many jobs are pending?
+        - How many jobs are in-progress
+        - How many jobs are errored?
+        - How many jobs are done?
+- Refactor all the data management part and come up with a mini librairy to use a relational database in memory
+    - Organization by tables, fields, relation ship
+    - Only code for now the hasMany() and belongsTo() relation ship
+- Simple web interface which is using the gateway HTTP interface to admistrate
+   - What UI/JS Framework we want to use?
+   - Should we separate this web interface in a different repository? 
+   - Log in with username and password
+   - Show some stats about the server
+   - Easily switch between groups
+   - See the queues in that group
+   - See the jobs/recurrent jobs in the queue
+   - See workers in a queue
+   - Kick out a worker
+   - Delete a job
+   - Delete a queue
