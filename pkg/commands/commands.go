@@ -86,6 +86,22 @@ var CmdMap = []CmdDefinition{
 		Usage:       "DELETE_QUEUE {queue_name}",
 		Description: "Delete a queue",
 	}, {
+		Name:        "PURGE_JOBS",
+		Handler:     PurgeJobs,
+		RequireAuth: true,
+		UseGroup:    true,
+		Args:        1,
+		Usage:       "PURGE_JOBS {queue_slug}",
+		Description: "Delete every jobs in a queue",
+	}, {
+		Name:        "PURGE_WORKERS",
+		Handler:     PurgeWorkers,
+		RequireAuth: true,
+		UseGroup:    true,
+		Args:        1,
+		Usage:       "PURGE_WORKERS {queue_slug}",
+		Description: "Unsubscribe every worker in a queue",
+	}, {
 		Name:        "LIST_JOBS",
 		Handler:     ListJobs,
 		RequireAuth: true,

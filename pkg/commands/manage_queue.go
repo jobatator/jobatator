@@ -33,3 +33,35 @@ func DeleteQueue(cmd CmdInterface) {
 	}
 	ReturnString(cmd, "OK")
 }
+
+// PurgeJobs - Will delete every jobs in a queue
+func PurgeJobs(cmd CmdInterface) {
+	queue, err := store.FindQueueBySlug(cmd.Parts[1], cmd.User.CurrentGroup, false)
+	if err != nil {
+		ReturnError(cmd, err.Error())
+		return
+	}
+	queue.Jobs = make([]store.Job, 0)
+	err = queue.Update()
+	if err != nil {
+		ReturnError(cmd, err.Error())
+		return
+	}
+	ReturnString(cmd, "OK")
+}
+
+// PurgeWorkers - Will delete every worker in a queue (so unsubscribe all the worker from a particular queue)
+func PurgeWorkers(cmd CmdInterface) {
+	queue, err := store.FindQueueBySlug(cmd.Parts[1], cmd.User.CurrentGroup, false)
+	if err != nil {
+		ReturnError(cmd, err.Error())
+		return
+	}
+	queue.Workers = make([]store.User, 0)
+	err = queue.Update()
+	if err != nil {
+		ReturnError(cmd, err.Error())
+		return
+	}
+	ReturnString(cmd, "OK")
+}
