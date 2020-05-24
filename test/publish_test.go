@@ -3,7 +3,6 @@ package test
 import (
 	"bufio"
 	"encoding/json"
-	"net"
 	"strconv"
 	"testing"
 
@@ -47,14 +46,6 @@ func getFakeJobArgs() JobArgs {
 		myJobArgs.List = append(myJobArgs.List, fooObject)
 	}
 	return myJobArgs
-}
-
-func getDebug(conn net.Conn, buf *bufio.Reader) commands.DebugOutput {
-	send(conn, "DEBUG_JSON")
-	reply := readReply(buf)
-	var debugData commands.DebugOutput
-	json.Unmarshal([]byte(reply), &debugData)
-	return debugData
 }
 
 var secondClientReady bool = false

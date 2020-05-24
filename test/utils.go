@@ -6,6 +6,7 @@ import (
 	"net"
 	"strings"
 
+	"github.com/lefuturiste/jobatator/pkg/commands"
 	"github.com/lefuturiste/jobatator/pkg/server"
 	"github.com/lefuturiste/jobatator/pkg/store"
 )
@@ -42,6 +43,14 @@ func startServer() {
 	}
 }
 
+func doAuthStuff(conn net.Conn) {
+	buf := bufio.NewReader(conn)
+	send(conn, "AUTH user1 pass1")
+	readReply(buf)
+	send(conn, "USE_GROUP group1")
+	readReply(buf)
+}
+
 func getConn() net.Conn {
 	tcpAddr, _ := net.ResolveTCPAddr("tcp", "localhost:8964")
 	conn, _ := net.DialTCP("tcp", nil, tcpAddr)
@@ -59,4 +68,12 @@ func readReply(buf *bufio.Reader) string {
 
 func send(conn net.Conn, str string) {
 	conn.Write([]byte(str + "\n"))
+}
+
+func getDebug(conn net.Conn, buf *bufio.Reader) commands.DebugOutput {
+	send(conn, "DEBUG_JSON")
+	reply := readReply(buf)
+	var debugData commands.DebugOutput
+	json.Unmarshal([]byte(reply), &debugData)
+	return debugData
 }
