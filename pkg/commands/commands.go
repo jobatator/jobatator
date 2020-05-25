@@ -139,5 +139,21 @@ var CmdMap = []CmdDefinition{
 		Args:        3,
 		Usage:       "RECURRENT_JOB {queue_slug} {job_type} {cron_instruction}",
 		Description: "Declare recurrent job on a queue",
+	}, {
+		Name:        "LIST_RECURRENT_JOBS",
+		Handler:     ListRecurrentJobs,
+		RequireAuth: true,
+		UseGroup:    true,
+		Args:        1,
+		Usage:       "LIST_RECURRENT_JOBS {queue_slug}",
+		Description: "List all the recurrent jobs of a queue",
+	}, {
+		Name:        "DELETE_RECURRENT_JOB",
+		Handler:     DeleteRecurrentJobs,
+		RequireAuth: true,
+		UseGroup:    true,
+		Args:        1,
+		Usage:       "DELETE_RECURRENT_JOB {job_entry_id}",
+		Description: "Delete a recurrent job",
 	},
 }

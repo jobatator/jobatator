@@ -33,11 +33,11 @@ type Job struct {
 // FindJob - find a job in all the queues
 func FindJob(id string) (Job, error) {
 	var job Job
-	// find the job
 	for _, queue := range Queues {
 		for _, job := range queue.Jobs {
 			if job.ID == id {
 				queue.Jobs = make([]Job, 0)
+				queue.RecurrentJobs = make([]RecurrentJob, 0)
 				job.Queue = queue
 				return job, nil
 			}

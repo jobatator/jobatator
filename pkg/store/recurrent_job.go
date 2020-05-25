@@ -10,16 +10,20 @@ type RecurrentJob struct {
 	CronExpression string
 }
 
-// ListRecurrentJob - List all reccurent jobs in a queue
-func ListRecurrentJob(queue Queue) []RecurrentJob {
-	var jobs []RecurrentJob
-	return jobs
-}
-
 // FindRecurrentJob - Find a reccurent job by id
-func FindRecurrentJob() RecurrentJob {
+func FindRecurrentJob(id int) (RecurrentJob, error) {
 	var job RecurrentJob
-	return job
+	for _, queue := range Queues {
+		for _, job := range queue.RecurrentJobs {
+			if job.EntryID == id {
+				queue.Jobs = make([]Job, 0)
+				queue.RecurrentJobs = make([]RecurrentJob, 0)
+				job.Queue = queue
+				return job, nil
+			}
+		}
+	}
+	return job, errors.New("unknown-recurrent-job")
 }
 
 // FindRecurrentJobByType - Find a reccurent job by id
@@ -30,7 +34,7 @@ func FindRecurrentJobByType(queue Queue, jobType string) (RecurrentJob, error) {
 			return job, nil
 		}
 	}
-	return defaultJob, errors.New("unknown-job")
+	return defaultJob, errors.New("unknown-recurrent-job")
 }
 
 // Update - Update a reccurent job

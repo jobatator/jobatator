@@ -36,6 +36,12 @@ func Debug(cmd CmdInterface) {
 			ReturnString(cmd, "      state: "+job.State)
 			ReturnString(cmd, "      payload: "+job.Payload)
 		}
+		ReturnString(cmd, "  recurrent_jobs: "+strconv.FormatInt(int64(len(queue.RecurrentJobs)), 10))
+		for _, job := range queue.RecurrentJobs {
+			ReturnString(cmd, "    - id: "+strconv.FormatInt(int64(job.EntryID), 10))
+			ReturnString(cmd, "      type: "+job.Type)
+			ReturnString(cmd, "      expression: "+job.CronExpression)
+		}
 		ReturnString(cmd, "  workers: "+strconv.FormatInt(int64(len(queue.Workers)), 10))
 		for _, worker := range queue.Workers {
 			ReturnString(cmd, "    - addr: "+worker.Addr)
