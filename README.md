@@ -1,4 +1,4 @@
-<p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://avatars0.githubusercontent.com/u/65870207" alt="Vue logo"></a></p>
+<p align="center"><img width="200" src="https://avatars0.githubusercontent.com/u/65870207" alt="Jobatator logo"></a></p>
 
 <p align="center">
   <a href="https://github.com/jobatator/jobatator/actions"><img src="https://github.com/jobatator/jobatator/workflows/Continuous%20integration/badge.svg" alt="Build Status"></a>
