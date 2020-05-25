@@ -21,5 +21,5 @@ groups:
 users:
     - username: "your_user"
       password: "your_password"
-      groups: ["your_group"]
+      groups: ["your_group"] # the list of allowed groups for this user, you can use the ["*"] value to allow every group
 

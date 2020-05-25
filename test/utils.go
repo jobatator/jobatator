@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"encoding/json"
 	"net"
+	"strconv"
 	"strings"
 
+	"github.com/dchest/uniuri"
 	"github.com/lefuturiste/jobatator/pkg/commands"
 	"github.com/lefuturiste/jobatator/pkg/server"
 	"github.com/lefuturiste/jobatator/pkg/store"
@@ -25,7 +27,10 @@ users:
       groups: ["group1"]
     - username: "user2"
       password: "pass1"
-      groups: ["group2", "group3"]
+      groups: ["group2", "group3"]  
+    - username: "superuser"
+      password: "superuser"
+      groups: ["*"]
 
 delay_policy: "IGNORE"
 test_mode: true
@@ -76,4 +81,40 @@ func getDebug(conn net.Conn, buf *bufio.Reader) commands.DebugOutput {
 	var debugData commands.DebugOutput
 	json.Unmarshal([]byte(reply), &debugData)
 	return debugData
+}
+
+type FooObject struct {
+	ID        string
+	Name      string
+	Slug      string
+	Something string
+}
+
+type JobArgs struct {
+	UserID           string
+	FileURL          string
+	IsSomething      bool
+	CountOfSomething int
+	List             []FooObject
+}
+
+var fakeJobArgs JobArgs
+
+func getFakeJobArgs() JobArgs {
+	var myJobArgs JobArgs
+	myJobArgs.UserID = "ID"
+	myJobArgs.FileURL = "https://example.com"
+	myJobArgs.IsSomething = true
+	myJobArgs.CountOfSomething = 9942
+	myJobArgs.List = make([]FooObject, 0)
+
+	for i := 1; i < 10; i++ {
+		var fooObject FooObject
+		fooObject.ID = uniuri.New()
+		fooObject.Name = "Object " + strconv.FormatInt(int64(i), 10)
+		fooObject.Slug = "object-" + strconv.FormatInt(int64(i), 10)
+		fooObject.Something = "lel-" + uniuri.New() + "-lel"
+		myJobArgs.List = append(myJobArgs.List, fooObject)
+	}
+	return myJobArgs
 }

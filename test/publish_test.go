@@ -3,50 +3,12 @@ package test
 import (
 	"bufio"
 	"encoding/json"
-	"strconv"
 	"testing"
 
-	"github.com/dchest/uniuri"
 	"github.com/lefuturiste/jobatator/pkg/commands"
 	"github.com/lefuturiste/jobatator/pkg/store"
 	"github.com/magiconair/properties/assert"
 )
-
-type FooObject struct {
-	ID        string
-	Name      string
-	Slug      string
-	Something string
-}
-
-type JobArgs struct {
-	UserID           string
-	FileURL          string
-	IsSomething      bool
-	CountOfSomething int
-	List             []FooObject
-}
-
-var fakeJobArgs JobArgs
-
-func getFakeJobArgs() JobArgs {
-	var myJobArgs JobArgs
-	myJobArgs.UserID = "ID"
-	myJobArgs.FileURL = "https://example.com"
-	myJobArgs.IsSomething = true
-	myJobArgs.CountOfSomething = 9942
-	myJobArgs.List = make([]FooObject, 0)
-
-	for i := 1; i < 10; i++ {
-		var fooObject FooObject
-		fooObject.ID = uniuri.New()
-		fooObject.Name = "Object " + strconv.FormatInt(int64(i), 10)
-		fooObject.Slug = "object-" + strconv.FormatInt(int64(i), 10)
-		fooObject.Something = "lel-" + uniuri.New() + "-lel"
-		myJobArgs.List = append(myJobArgs.List, fooObject)
-	}
-	return myJobArgs
-}
 
 var secondClientReady bool = false
 
@@ -114,32 +76,8 @@ func TestJob(t *testing.T) {
 	go secondClient(t)
 
 	conn := getConn()
+	doAuthStuff(conn)
 	buf := bufio.NewReader(conn)
-
-	// try to authenticate with bad credidentials
-	send(conn, "AUTH user1 pass2")
-	reply := readReply(buf)
-	assert.Equal(t, reply[0:3], "Err")
-
-	// try to authenticate with good credidentials
-	send(conn, "AUTH user1 pass1")
-	reply = readReply(buf)
-	assert.Equal(t, reply, "Welcome!")
-
-	// check if the connexion is alive
-	send(conn, "PING")
-	reply = readReply(buf)
-	assert.Equal(t, reply, "PONG")
-
-	// try to use a forbidden group
-	send(conn, "USE_GROUP group2")
-	reply = readReply(buf)
-	assert.Equal(t, reply[0:3], "Err")
-
-	// try to use a allowed group
-	send(conn, "USE_GROUP group1")
-	reply = readReply(buf)
-	assert.Equal(t, reply, "OK")
 
 	// wait for the second client to initialize (auth & use group)
 	for !secondClientReady {
@@ -153,7 +91,7 @@ func TestJob(t *testing.T) {
 
 	// publish the job
 	send(conn, "PUBLISH default job.type '"+jsonStr+"'")
-	reply = readReply(buf)
+	reply := readReply(buf)
 	// to get the id use reply[3:]
 	assert.Equal(t, reply[0:3], "OK#")
 

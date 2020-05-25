@@ -42,7 +42,7 @@ func UseGroupUniversal(groupRaw string, user store.User) (store.Group, error) {
 	}
 	var isAllowed bool = false
 	for _, value := range user.Groups {
-		if value == group.Slug {
+		if value == group.Slug || value == "*" {
 			isAllowed = true
 		}
 	}
