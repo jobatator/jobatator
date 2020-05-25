@@ -1,4 +1,10 @@
-# Jobatator
+<p align="center"><a href="https://vuejs.org" target="_blank" rel="noopener noreferrer"><img width="100" src="https://avatars0.githubusercontent.com/u/65870207" alt="Vue logo"></a></p>
+
+<p align="center">
+  <a href="https://github.com/jobatator/jobatator/actions"><img src="https://github.com/jobatator/jobatator/workflows/Continuous%20integration/badge.svg" alt="Build Status"></a>
+  <a href="https://discord.gg/9M4vVsX"><img src="https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true" alt="Chat"></a>
+  <br>
+</p>
 
 Jobatator is a light alternative to RabbitMQ, if you need a way to connect workers together in order to work on some 
 heavy jobs, this might be a solution for you. You can interact with jobatator using a TCP connexion.
