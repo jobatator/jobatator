@@ -3,18 +3,6 @@ package commands
 // CmdMap -
 var CmdMap = []CmdDefinition{
 	{
-		Name:        "PING",
-		Handler:     Ping,
-		RequireAuth: false,
-		UseGroup:    false,
-		Description: "Check if the connexion is alive",
-	}, {
-		Name:        "QUIT",
-		Handler:     Quit,
-		RequireAuth: false,
-		UseGroup:    false,
-		Description: "Disconnect from the server",
-	}, {
 		Name:        "AUTH",
 		Handler:     Auth,
 		RequireAuth: false,
@@ -30,31 +18,6 @@ var CmdMap = []CmdDefinition{
 		Args:        1,
 		Usage:       "USE_GROUP {group}",
 		Description: "Declare which group the client want to use",
-	}, {
-		Name:        "DEBUG_PARTS",
-		Handler:     DebugParts,
-		RequireAuth: false,
-		UseGroup:    false,
-		Args:        -1,
-		Description: "Dump parsed command parts",
-	}, {
-		Name:        "DEBUG",
-		Handler:     Debug,
-		RequireAuth: false,
-		UseGroup:    false,
-		Description: "Dump server data in a human readable format, only work if debug is enabled",
-	}, {
-		Name:        "DEBUG_JSON",
-		Handler:     DebugJSON,
-		RequireAuth: false,
-		UseGroup:    false,
-		Description: "Dump server data in a JSON format, only work if debug is enabled",
-	}, {
-		Name:        "STOP_SERVER",
-		Handler:     StopServer,
-		RequireAuth: false,
-		UseGroup:    false,
-		Description: "Stop the server, only work if test_mode is enabled",
 	}, {
 		Name:        "PUBLISH",
 		Handler:     Publish,
@@ -155,5 +118,48 @@ var CmdMap = []CmdDefinition{
 		Args:        1,
 		Usage:       "DELETE_RECURRENT_JOB {job_entry_id}",
 		Description: "Delete a recurrent job",
+	}, {
+		Name:        "HEALTH",
+		Handler:     Health,
+		RequireAuth: true,
+		UseGroup:    false,
+		Description: "Get the health of this jobatator instance",
+	}, {
+		Name:        "DEBUG_PARTS",
+		Handler:     DebugParts,
+		RequireAuth: false,
+		UseGroup:    false,
+		Args:        -1,
+		Description: "Dump parsed command parts",
+	}, {
+		Name:        "DEBUG",
+		Handler:     Debug,
+		RequireAuth: false,
+		UseGroup:    false,
+		Description: "Dump server data in a human readable format, only work if debug is enabled",
+	}, {
+		Name:        "DEBUG_JSON",
+		Handler:     DebugJSON,
+		RequireAuth: false,
+		UseGroup:    false,
+		Description: "Dump server data in a JSON format, only work if debug is enabled",
+	}, {
+		Name:        "STOP_SERVER",
+		Handler:     StopServer,
+		RequireAuth: false,
+		UseGroup:    false,
+		Description: "Stop the server, only work if test_mode is enabled",
+	}, {
+		Name:        "PING",
+		Handler:     Ping,
+		RequireAuth: false,
+		UseGroup:    false,
+		Description: "Check if the connexion is alive",
+	}, {
+		Name:        "QUIT",
+		Handler:     Quit,
+		RequireAuth: false,
+		UseGroup:    false,
+		Description: "Disconnect from the server",
 	},
 }

@@ -50,7 +50,7 @@ func UseGroupUniversal(groupRaw string, user store.User) (store.Group, error) {
 		return group, errors.New("forbidden-group")
 	}
 	user.CurrentGroup = group
-	store.UpdateUser(user)
+	store.UpdateSession(user)
 	return group, nil
 }
 
@@ -77,9 +77,10 @@ func Auth(cmd CmdInterface) {
 		ReturnError(cmd, "invalid-creds")
 		return
 	}
+	// we update the session
+	cmd.User.Username = user.Username
+	cmd.User.Password = user.Password
+	cmd.User.Groups = user.Groups
+	store.UpdateSession(cmd.User)
 	ReturnString(cmd, "Welcome!")
-	// we add the user to the list of the sessions
-	user.Addr = cmd.Conn.RemoteAddr().String()
-	user.Conn = cmd.Conn
-	store.Sessions = append(store.Sessions, user)
 }

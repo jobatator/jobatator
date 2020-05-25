@@ -22,8 +22,8 @@ func FindSession(conn net.Conn) User {
 	return user
 }
 
-// UpdateUser -
-func UpdateUser(user User) {
+// UpdateSession -
+func UpdateSession(user User) {
 	for key, value := range Sessions {
 		if value.Addr == user.Addr {
 			Sessions[key] = user

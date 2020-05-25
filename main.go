@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	store.StartUptimeTimer()
 	store.LoadConfigFromFile("./config.yml")
 	go server.StartHTTPServer()
 	server.Start()

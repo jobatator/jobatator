@@ -42,7 +42,7 @@ func UpdateJob(cmd CmdInterface) {
 		return
 	}
 
-	store.UpdateUser(cmd.User)
+	store.UpdateSession(cmd.User)
 	job.Update()
 
 	delay := -1

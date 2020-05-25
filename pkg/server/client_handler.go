@@ -18,6 +18,11 @@ func handleClient(conn net.Conn) {
 	cmd := cmds.CmdInterface{
 		Conn: conn,
 	}
+	// create a session
+	var user store.User
+	user.Addr = conn.RemoteAddr().String()
+	user.Conn = conn
+	store.Sessions = append(store.Sessions, user)
 	for {
 		message = true
 		buf := make([]byte, 1024)
@@ -77,27 +82,27 @@ func handleClient(conn net.Conn) {
 			input = input + string(buf)
 		}
 	}
-	if store.FindSession(cmd.Conn).Username != "" {
-		currentAddr := conn.RemoteAddr().String()
-		// remove user from the session array
-		var newSessions []store.User
-		for _, val := range store.Sessions {
-			if currentAddr != val.Addr {
-				newSessions = append(newSessions, val)
-			}
-		}
-		store.Sessions = newSessions
 
-		// remove user from all the worker inside the queues
-		for key, queue := range store.Queues {
-			var newWorkers []store.User
-			for _, worker := range queue.Workers {
-				if currentAddr != worker.Addr {
-					newWorkers = append(newWorkers, worker)
-				}
-			}
-			store.Queues[key].Workers = newWorkers
+	// user disconnected, we need to delete the user session and remove as a worker in queues
+	// remove user from the session array
+	currentAddr := conn.RemoteAddr().String()
+	var newSessions []store.User
+	for _, val := range store.Sessions {
+		if currentAddr != val.Addr {
+			newSessions = append(newSessions, val)
 		}
+	}
+	store.Sessions = newSessions
+
+	// remove user from all the workers inside the queues
+	for key, queue := range store.Queues {
+		var newWorkers []store.User
+		for _, worker := range queue.Workers {
+			if currentAddr != worker.Addr {
+				newWorkers = append(newWorkers, worker)
+			}
+		}
+		store.Queues[key].Workers = newWorkers
 	}
 }
 
