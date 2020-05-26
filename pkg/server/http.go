@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/lefuturiste/jobatator/pkg/store"
@@ -35,11 +36,27 @@ func StartHTTPServer() {
 	}
 
 	http.HandleFunc("/gateway", func(w http.ResponseWriter, r *http.Request) {
-
 		w.Header().Set("Content-Type", "application/json")
 
-		if r.Method != "POST" {
-			http.StatusText(http.StatusMethodNotAllowed)
+		output := gatewayHTTPOutput{
+			Success: true,
+			Errors:  []httpError{},
+		}
+		// if there is a referer header sent by the client, use this value as the cors host
+		referer := r.Header.Get("Referer")
+		if referer != "" {
+			// extract the host from the referer URL using a regex
+			expr, _ := regexp.Compile(`http(s)?:\/\/[a-zA-Z0-9.]+(:[0-9]{1,9})?`)
+			match := expr.FindStringSubmatch(referer)
+			if len(match) > 0 {
+				w.Header().Set("Access-Control-Allow-Origin", match[0])
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Referer")
+			}
+		}
+
+		if r.Method != "POST" && r.Method != "OPTIONS" {
+			w.WriteHeader(http.StatusMethodNotAllowed)
 			resp, _ := json.Marshal(gatewayHTTPOutput{
 				Success: false,
 				Errors:  []httpError{{Message: "Method not allowed", Code: "method-not-allowed"}},
@@ -47,9 +64,15 @@ func StartHTTPServer() {
 			fmt.Fprintf(w, string(resp))
 			return
 		}
+		if r.Method == "OPTIONS" {
+			resp, _ := json.Marshal(output)
+			fmt.Fprintf(w, string(resp))
+			return
+		}
+
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			http.StatusText(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
 			resp, _ := json.Marshal(gatewayHTTPOutput{
 				Success: false,
 				Errors:  []httpError{{Message: "Invalid body", Code: "invalid-body"}},
@@ -61,7 +84,7 @@ func StartHTTPServer() {
 		var bodyFormated gatewayHTTPInput
 		err = json.Unmarshal(body, &bodyFormated)
 		if err != nil || len(bodyFormated.Commands) == 0 {
-			http.StatusText(http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
 			resp, _ := json.Marshal(gatewayHTTPOutput{
 				Success: false,
 				Errors:  []httpError{{Message: "Invalid body", Code: "invalid-body"}},
@@ -73,10 +96,6 @@ func StartHTTPServer() {
 		// connect to this socket
 		conn, _ := net.Dial("tcp", store.Options.Host+":"+strconv.FormatInt(int64(store.Options.Port), 10))
 
-		output := gatewayHTTPOutput{
-			Success: true,
-			Errors:  []httpError{},
-		}
 		for _, command := range bodyFormated.Commands {
 			// send to socket
 			fmt.Fprintf(conn, command+"\n")
@@ -84,10 +103,25 @@ func StartHTTPServer() {
 			message, _ := bufio.NewReader(conn).ReadString('\n')
 			message = message[:len(message)-1]
 
-			output.Data = append(output.Data, message)
+			if len(message) >= 3 && message[0:3] == "Err" {
+				code := message
+				if len(code) >= 5 {
+					code = message[5:]
+				}
+				output.Errors = append(output.Errors, httpError{
+					Code:    code,
+					Message: "",
+				})
+			} else {
+				output.Data = append(output.Data, message)
+			}
 		}
 		conn.Close()
 
+		output.Success = len(output.Errors) == 0
+		if !output.Success {
+			w.WriteHeader(http.StatusBadRequest)
+		}
 		resp, _ := json.Marshal(output)
 		fmt.Fprintf(w, string(resp))
 	})
