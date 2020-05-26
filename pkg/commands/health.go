@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/lefuturiste/jobatator/pkg/utils"
 )
 
 // HealthOutput -
@@ -21,7 +22,7 @@ type HealthOutput struct {
 // Health -
 func Health(cmd CmdInterface) {
 	var output HealthOutput
-	output.Uptime = store.GetUptime()
+	output.Uptime = utils.GetUptime()
 	output.Os = runtime.GOOS
 	output.Version = runtime.Version()
 	output.NumCPU = runtime.NumCPU()

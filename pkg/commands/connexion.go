@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"encoding/json"
 	"errors"
 	"os"
 
@@ -83,4 +84,26 @@ func Auth(cmd CmdInterface) {
 	cmd.User.Groups = user.Groups
 	store.UpdateSession(cmd.User)
 	ReturnString(cmd, "Welcome!")
+}
+
+// SessionOutput - Represent the current session
+type SessionOutput struct {
+	Username     string
+	Addr         string
+	CurrentGroup string
+	IsWorker     bool
+	Groups       []string
+}
+
+// Session -
+func Session(cmd CmdInterface) {
+	user := store.FindSession(cmd.Conn)
+	jsonStr, _ := json.Marshal(SessionOutput{
+		Username:     user.Username,
+		Addr:         user.Addr,
+		CurrentGroup: user.CurrentGroup.Slug,
+		IsWorker:     user.Status != "",
+		Groups:       user.Groups,
+	})
+	ReturnString(cmd, string(jsonStr))
 }

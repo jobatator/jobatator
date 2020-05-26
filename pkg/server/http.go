@@ -9,8 +9,10 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/lefuturiste/jobatator/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -95,7 +97,10 @@ func StartHTTPServer() {
 
 		// connect to this socket
 		conn, _ := net.Dial("tcp", store.Options.Host+":"+strconv.FormatInt(int64(store.Options.Port), 10))
-
+		jsonData := make([]string, 0)
+		jsonIndex := 0
+		jsonStartSequence := "$!$!__"
+		jsonEndSequence := "__!$!$"
 		for _, command := range bodyFormated.Commands {
 			// send to socket
 			fmt.Fprintf(conn, command+"\n")
@@ -113,6 +118,17 @@ func StartHTTPServer() {
 					Message: "",
 				})
 			} else {
+				if len(message) > 3 &&
+					(message == "null" ||
+						message[0:3] == `[{"` ||
+						message[0:3] == `[["` ||
+						message[0:2] == `{"` ||
+						message[0:2] == `["`) {
+					// consider this message as json do not insert directly into the data array
+					jsonData = append(jsonData, message)
+					message = jsonStartSequence + utils.IntToStr(jsonIndex) + jsonEndSequence
+					jsonIndex++
+				}
 				output.Data = append(output.Data, message)
 			}
 		}
@@ -123,10 +139,36 @@ func StartHTTPServer() {
 			w.WriteHeader(http.StatusBadRequest)
 		}
 		resp, _ := json.Marshal(output)
-		fmt.Fprintf(w, string(resp))
+
+		// replace all json ocurrences by directly injecting into the string
+		// this code can be dangerous because it can trapped into a infinit loop
+		// and it is subject to injection of the '$!$!__0__!$!$' sequence
+		out := string(resp)
+		hasError := false
+		cursor := 0
+		for strings.Index(out, jsonStartSequence) != -1 && !hasError {
+			startIndex := strings.Index(out, jsonStartSequence)
+			if startIndex < cursor {
+				hasError = true
+				break
+			}
+			endIndex := strings.Index(out, jsonEndSequence)
+			if endIndex < cursor {
+				hasError = true
+				break
+			}
+			index := utils.StrToInt(out[startIndex+len(jsonStartSequence) : endIndex])
+			if index < 0 || index > len(jsonData)-1 {
+				hasError = true
+				break
+			}
+			out = out[0:startIndex-1] + jsonData[index] + out[endIndex+len(jsonEndSequence)+1:]
+			cursor = endIndex + len(jsonEndSequence) + 1 + len(jsonData[index])
+		}
+		fmt.Fprintf(w, out)
 	})
 
-	webListeningStr := store.Options.Host + ":" + strconv.FormatInt(int64(store.Options.WebPort), 10)
+	webListeningStr := store.Options.Host + ":" + utils.IntToStr(store.Options.WebPort)
 
 	log.Info("Web server listening on " + webListeningStr)
 	http.ListenAndServe(webListeningStr, nil)

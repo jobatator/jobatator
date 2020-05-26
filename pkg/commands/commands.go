@@ -169,5 +169,11 @@ var CmdMap = []CmdDefinition{
 		RequireAuth: false,
 		UseGroup:    false,
 		Description: "Disconnect from the server",
+	}, {
+		Name:        "SESSION",
+		Handler:     Session,
+		RequireAuth: true,
+		UseGroup:    false,
+		Description: "Get session data (user allowed groups for example)",
 	},
 }
