@@ -24,7 +24,7 @@ var CmdMap = []CmdDefinition{
 		RequireAuth: true,
 		UseGroup:    true,
 		Args:        3,
-		Usage:       "PUBLISH {queue_name} {job_type} {job_payload}",
+		Usage:       "PUBLISH {queue_slug} {job_type} {job_payload}",
 		Description: "Create a job in a queue and return the ID of the created job",
 	}, {
 		Name:        "SUBSCRIBE",
@@ -32,8 +32,16 @@ var CmdMap = []CmdDefinition{
 		RequireAuth: true,
 		UseGroup:    true,
 		Args:        1,
-		Usage:       "SUBSCRIBE {queue_name}",
+		Usage:       "SUBSCRIBE {queue_slug}",
 		Description: "Subscribe to a queue to receive jobs",
+	}, {
+		Name:        "UNSUBSCRIBE",
+		Handler:     Unsubscribe,
+		RequireAuth: true,
+		UseGroup:    true,
+		Args:        1,
+		Usage:       "UNSUBSCRIBE {queue_slug}",
+		Description: "The exact oposite of the SUBSCRIBE command",
 	}, {
 		Name:        "LIST_QUEUES",
 		Handler:     ListQueues,
@@ -46,7 +54,7 @@ var CmdMap = []CmdDefinition{
 		RequireAuth: true,
 		UseGroup:    true,
 		Args:        1,
-		Usage:       "DELETE_QUEUE {queue_name}",
+		Usage:       "DELETE_QUEUE {queue_slug}",
 		Description: "Delete a queue",
 	}, {
 		Name:        "PURGE_JOBS",
@@ -70,7 +78,7 @@ var CmdMap = []CmdDefinition{
 		RequireAuth: true,
 		UseGroup:    true,
 		Args:        1,
-		Usage:       "LIST_JOBS {queue_name}",
+		Usage:       "LIST_JOBS {queue_slug}",
 		Description: "List all jobs in a queue",
 	}, {
 		Name:        "UPDATE_JOB",

@@ -14,33 +14,38 @@ var secondClientReady bool = false
 
 func secondClient(t *testing.T) {
 	conn := getConn()
+	doAuthStuff(conn)
 	buf := bufio.NewReader(conn)
 
-	send(conn, "AUTH user1 pass1")
-	reply := readReply(buf)
-	assert.Equal(t, reply, "Welcome!")
-
-	send(conn, "USE_GROUP group1")
-	reply = readReply(buf)
-	assert.Equal(t, reply, "OK")
-
+	// try to subscribe to the default queue
 	send(conn, "SUBSCRIBE default")
-	reply = readReply(buf)
+	reply := readReply(buf)
 	assert.Equal(t, reply, "OK")
+
+	// assert that the queue is there
 	debug := getDebug(conn, buf)
 	assert.Equal(t, len(debug.Queues), 1)
 	assert.Equal(t, debug.Queues[0].Slug, "default")
 
+	// assert that the worker is there
+	assert.Equal(t, len(debug.Queues[0].Workers), 1)
+	assert.Equal(t, debug.Queues[0].Workers[0].Username, "user1")
+	assert.Equal(t, debug.Queues[0].Workers[0].CurrentGroup.Slug, "group1")
+
 	// the second client is ready
 	secondClientReady = true
 
+	// read the job dispatch data
 	reply = readReply(buf)
 	var dispatchData commands.DispatchData
 	json.Unmarshal([]byte(reply), &dispatchData)
 	assert.Equal(t, dispatchData.Job.Type, "job.type")
+
+	// assert the payload is as expected
 	jsonRaw, _ := json.Marshal(fakeJobArgs)
 	assert.Equal(t, dispatchData.Job.Payload, string(jsonRaw))
 
+	// try to set the job as updated
 	send(conn, "UPDATE_JOB "+dispatchData.Job.ID+" errored")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "OK")
@@ -49,23 +54,40 @@ func secondClient(t *testing.T) {
 	reply = readReply(buf)
 	json.Unmarshal([]byte(reply), &dispatchData)
 	assert.Equal(t, dispatchData.Job.State, "errored")
+
+	// assert tthat the job is set to a errored state and thus the worker to a available state
 	debug = getDebug(conn, buf)
 	assert.Equal(t, debug.Queues[0].Jobs[0].State, store.JobErrored)
 	assert.Equal(t, debug.Queues[0].Workers[0].Status, store.WorkerAvailable)
 
+	// try to update the job to an 'in-progress' state
 	send(conn, "UPDATE_JOB "+dispatchData.Job.ID+" in-progress")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "OK")
+
+	// assert that the job is set as in progress and thus the worker as busy
 	debug = getDebug(conn, buf)
 	assert.Equal(t, debug.Queues[0].Jobs[0].State, store.JobInProgress)
 	assert.Equal(t, debug.Queues[0].Workers[0].Status, store.WorkerBusy)
 
+	// try to set the job as done
 	send(conn, "UPDATE_JOB "+dispatchData.Job.ID+" done")
 	reply = readReply(buf)
 	assert.Equal(t, reply, "OK")
+
+	// assert that the job is updated
 	debug = getDebug(conn, buf)
 	assert.Equal(t, debug.Queues[0].Jobs[0].State, store.JobDone)
 	assert.Equal(t, debug.Queues[0].Workers[0].Status, store.WorkerAvailable)
+
+	// try to unsubscribe from the queue
+	send(conn, "UNSUBSCRIBE default")
+	reply = readReply(buf)
+	assert.Equal(t, reply, "OK")
+
+	// assert that the worker is deleted
+	debug = getDebug(conn, buf)
+	assert.Equal(t, len(debug.Queues[0].Workers), 0)
 
 	secondClientReady = true
 }
