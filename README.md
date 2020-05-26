@@ -117,3 +117,4 @@ You can find description of all the commands of the jobatator server [here](http
    - Kick out a worker
    - Delete a job
    - Delete a queue
+- Add read timeout for tcp server without enabling timeout for the workers clients

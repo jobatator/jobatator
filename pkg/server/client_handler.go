@@ -10,7 +10,8 @@ import (
 )
 
 func handleClient(conn net.Conn) {
-	log.Debug("New client: ", conn.RemoteAddr().String())
+	currentAddr := conn.RemoteAddr().String()
+	log.Debug(currentAddr + " - new client")
 	var message bool
 	var input string
 	var componentIndex int
@@ -20,14 +21,16 @@ func handleClient(conn net.Conn) {
 	}
 	// create a session
 	var user store.User
-	user.Addr = conn.RemoteAddr().String()
+	user.Addr = currentAddr
 	user.Conn = conn
 	store.Sessions = append(store.Sessions, user)
+
 	for {
 		message = true
 		buf := make([]byte, 1024)
 		_, err := conn.Read(buf)
 		if err != nil {
+			//log.Error("Failed to read from socket client:", err)
 			conn.Close()
 			break
 		}
@@ -50,7 +53,7 @@ func handleClient(conn net.Conn) {
 					components = parseCommand(input[0 : len(input)-1])
 				}
 				if len(components) > 0 {
-					log.Debug("New cmd: ", components)
+					log.Debug(currentAddr+" - cmd - ", components)
 					var name string = strings.ToUpper(components[0])
 					var cmdDefinition cmds.CmdDefinition
 					cmdDefinition.Args = -1
@@ -85,7 +88,6 @@ func handleClient(conn net.Conn) {
 
 	// user disconnected, we need to delete the user session and remove as a worker in queues
 	// remove user from the session array
-	currentAddr := conn.RemoteAddr().String()
 	var newSessions []store.User
 	for _, val := range store.Sessions {
 		if currentAddr != val.Addr {
@@ -104,6 +106,7 @@ func handleClient(conn net.Conn) {
 		}
 		store.Queues[key].Workers = newWorkers
 	}
+	log.Debug(currentAddr + " - quit")
 }
 
 func handleCommand(definition cmds.CmdDefinition, cmd cmds.CmdInterface) {
