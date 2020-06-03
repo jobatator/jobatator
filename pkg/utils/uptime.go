@@ -14,3 +14,8 @@ func StartUptimeTimer() {
 func GetUptime() int64 {
 	return (time.Now().Unix() - StartTimestamp)
 }
+
+// GetUnixTimestamp -
+func GetUnixTimestamp() int64 {
+	return time.Now().Unix()
+}
