@@ -95,8 +95,8 @@ type SessionOutput struct {
 	Groups       []string
 }
 
-// Session -
-func Session(cmd CmdInterface) {
+// CurrentSession - Get current session meta data
+func CurrentSession(cmd CmdInterface) {
 	user := store.FindSession(cmd.Conn)
 	jsonStr, _ := json.Marshal(SessionOutput{
 		Username:     user.Username,
