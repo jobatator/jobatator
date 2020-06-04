@@ -56,6 +56,20 @@ The major commands:
 
 You can find description of all the commands of the jobatator server [here](https://github.com/jobatator/jobatator/blob/master/pkg/commands/commands.go)
 
+## Running unit tests
+
+Make sure to use this command to run unit tests: `go test -count=1 -v ./test/`
+
+## Contributions
+
+From [lefuturiste](https://github.com/lefuturiste), the maintainer of the project:
+
+I'm happy to take any remarks or critisims regarding jobatator. Feel free to [create a issue](https://github.com/jobatator/jobatator/issues/new).
+
+Also, I'm open to pull requests, feature requests or anything like that.
+
+You can also contact be via discord (lefuturiste#5297) or by [Twitter](https://twitter.com/_le_futuriste).
+
 ## Internal Entities/Ressources
 
 ### Group
@@ -92,20 +106,20 @@ You can find description of all the commands of the jobatator server [here](http
 
 ## Roadmap/Todolist
 
-- Being able to mock commands and not necessarly use the socket interface (can be usefull for the http gateway interface but also for unit tests)
+- [ ] Being able to mock commands and not necessarly use the socket interface (can be usefull for the http gateway interface but also for unit tests)
     - Should we use a CmdOutput struct type?
     - Should we use a (string, error) return tuple type?
-- User that have * groups can access all groups and are considered as an administrator
-- Get stat about a queue (number of job of certain state and type)
+- [X] User that have * groups can access all groups and are considered as an administrator
+- [ ] Get stat about a queue (number of job of certain state and type)
     - By job.type and By all:
         - How many jobs are pending?
         - How many jobs are in-progress
         - How many jobs are errored?
         - How many jobs are done?
-- Refactor all the data management part and come up with a mini librairy to use a relational database in memory
+- [ ] Refactor all the data management part and come up with a mini librairy to use a relational database in memory
     - Organization by tables, fields, relation ship
     - Only code for now the hasMany() and belongsTo() relation ship
-- Simple web interface which is using the gateway HTTP interface to admistrate
+- [ ] Simple web interface which is using the gateway HTTP interface to admistrate
    - What UI/JS Framework we want to use?
    - Should we separate this web interface in a different repository? 
    - Log in with username and password
@@ -117,4 +131,4 @@ You can find description of all the commands of the jobatator server [here](http
    - Kick out a worker
    - Delete a job
    - Delete a queue
-- Add read timeout for tcp server without enabling timeout for the workers clients
+- [ ] Add read timeout for tcp server without enabling timeout for the workers clients
