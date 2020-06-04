@@ -3,7 +3,7 @@ package commands
 import (
 	"strconv"
 
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/store"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 )

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"runtime"
 
-	"github.com/lefuturiste/jobatator/pkg/store"
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/jobatator/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/utils"
 )
 
 // HealthOutput -

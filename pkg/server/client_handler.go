@@ -4,8 +4,8 @@ import (
 	"net"
 	"strings"
 
-	cmds "github.com/lefuturiste/jobatator/pkg/commands"
-	"github.com/lefuturiste/jobatator/pkg/store"
+	cmds "github.com/jobatator/jobatator/pkg/commands"
+	"github.com/jobatator/jobatator/pkg/store"
 	log "github.com/sirupsen/logrus"
 )
 

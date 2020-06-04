@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/store"
 )
 
 // ListRecurrentJobs - List all recurrent jobs in a queue

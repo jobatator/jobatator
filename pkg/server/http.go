@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/lefuturiste/jobatator/pkg/store"
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/jobatator/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/utils"
 	log "github.com/sirupsen/logrus"
 )
 

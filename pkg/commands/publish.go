@@ -2,7 +2,7 @@ package commands
 
 import (
 	"github.com/dchest/uniuri"
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/store"
 )
 
 // PublishUniversal - Will add a job on a queue PUBLISH queue_name job_type payload

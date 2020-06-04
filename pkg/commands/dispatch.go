@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/store"
 )
 
 // Dispatch -

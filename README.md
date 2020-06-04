@@ -11,19 +11,19 @@ heavy jobs, this might be a solution for you. You can interact with jobatator us
 
 ## Configuration
 
-You can find an example of configuration in `config.example.yml`. Access it [here](https://github.com/lefuturiste/jobatator/blob/master/config.example.yml).
+You can find an example of configuration in `config.example.yml`. Access it [here](https://github.com/jobatator/jobatator/blob/master/config.example.yml).
 
 **Warning: by default if you are not providing the port or host key in the config, the server will listen by default on host 0.0.0.0 and on port 8962.**
 
 ## Docker image
 
-You can find the docker image details [here](https://hub.docker.com/repository/docker/lefuturiste/jobatator).
+You can find the docker image details [here](https://hub.docker.com/repository/docker/jobatator/jobatator).
 
 ## Use with docker-compose
 
 The most simple way to start a jobatator server using docker is by making use of a `docker-compose.yml` file.
 
-You can find an example of a `docker-compose.yml` file to host jobatator [here](https://github.com/lefuturiste/jobatator/blob/master/docker-compose.yml).
+You can find an example of a `docker-compose.yml` file to host jobatator [here](https://github.com/jobatator/jobatator/blob/master/docker-compose.yml).
 
 In the same directory with the `docker-compose.yml` file type this command to start the server:
 
@@ -54,7 +54,7 @@ The major commands:
 - SUBSCRIBE {queue_slug}
 - UPDATE_JOB {job_id} {job_status} # status can be 'done', 'in-progress' or 'errored'
 
-You can find description of all the commands of the jobatator server [here](https://github.com/lefuturiste/jobatator/blob/master/pkg/commands/commands.go)
+You can find description of all the commands of the jobatator server [here](https://github.com/jobatator/jobatator/blob/master/pkg/commands/commands.go)
 
 ## Internal Entities/Ressources
 

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/store"
 )
 
 // Ping -

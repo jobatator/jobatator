@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/dchest/uniuri"
-	"github.com/lefuturiste/jobatator/pkg/commands"
-	"github.com/lefuturiste/jobatator/pkg/server"
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/commands"
+	"github.com/jobatator/jobatator/pkg/server"
+	"github.com/jobatator/jobatator/pkg/store"
 )
 
 const testConfig = `

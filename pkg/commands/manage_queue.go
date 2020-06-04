@@ -3,7 +3,7 @@ package commands
 import (
 	"encoding/json"
 
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/store"
 )
 
 // ListQueues - List all the queues in a group

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/lefuturiste/jobatator/pkg/commands"
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/commands"
+	"github.com/jobatator/jobatator/pkg/store"
 	"github.com/magiconair/properties/assert"
 )
 

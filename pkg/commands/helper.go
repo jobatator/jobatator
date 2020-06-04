@@ -3,7 +3,7 @@ package commands
 import (
 	"net"
 
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/store"
 )
 
 // CmdDefinition - Use to define the command

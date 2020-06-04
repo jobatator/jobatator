@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/store"
 	log "github.com/sirupsen/logrus"
 )
 

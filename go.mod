@@ -1,4 +1,4 @@
-module github.com/lefuturiste/jobatator
+module github.com/jobatator/jobatator
 
 go 1.14
 

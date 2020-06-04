@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/store"
 )
 
 // Subscribe - If the client is a worker, he will use this cmd to subscribe to a queue

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/lefuturiste/jobatator/pkg/server"
-	"github.com/lefuturiste/jobatator/pkg/store"
-	"github.com/lefuturiste/jobatator/pkg/utils"
+	"github.com/jobatator/jobatator/pkg/server"
+	"github.com/jobatator/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/utils"
 )
 
 func main() {

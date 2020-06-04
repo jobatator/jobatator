@@ -3,7 +3,7 @@ package commands
 import (
 	"encoding/json"
 
-	"github.com/lefuturiste/jobatator/pkg/store"
+	"github.com/jobatator/jobatator/pkg/store"
 )
 
 // ListSessions - List all sessions in the current group
