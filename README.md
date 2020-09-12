@@ -44,7 +44,7 @@ docker run \
 
 ## Commands
 
-Warning: For now the server is using "\r\n" but "\n" as end line!
+Warning: For now the server is not using "\r\n" but "\n" as end line! (UNIX way)
 
 The major commands:
 
@@ -132,3 +132,4 @@ You can also contact be via discord (lefuturiste#5297) or by [Twitter](https://t
    - Delete a job
    - Delete a queue
 - [ ] Add read timeout for tcp server without enabling timeout for the workers clients
+
